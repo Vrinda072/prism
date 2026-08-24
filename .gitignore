@@ -25,4 +25,4 @@ huggingface_cache/
 backend/app/tmp_uploads/
 
 # Local tooling state
-.claude/scheduled_tasks.lock
+.claude/
