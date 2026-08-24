@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f7f6f2;
+  --color-ink: #16150f;
+  --color-muted: #6b6659;
+  --color-border: #e2dfd3;
+  --color-panel: #fbfaf7;
+  --color-accent: #ff4b2b;
+  /* Darker than --color-accent specifically for text (error messages) —
+     the brand red at full saturation fails WCAG AA (4.5:1) for text on
+     paper, though it's fine for the non-text uses (dots, borders). */
+  --color-accent-text: #c2321a;
+
+  --font-heading: "Space Grotesk", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-paper: #100f0c;
+    --color-ink: #f5f3ec;
+    --color-muted: #8f8a78;
+    --color-border: #2a2820;
+    --color-panel: #161510;
+    --color-accent: #ff6a45;
+    --color-accent-text: #ff6a45; /* already passes AA against dark paper */
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Custom range slider: thin track, small thumb, accent-colored — the
+   default browser control reads as unstyled/unfinished otherwise. */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: var(--color-border);
+  border-radius: 999px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  cursor: pointer;
+  border: 2px solid var(--color-paper);
+  box-shadow: 0 0 0 1px var(--color-accent);
+  transition: transform 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  cursor: pointer;
+  border: 2px solid var(--color-paper);
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+
+input[type="range"]:disabled::-webkit-slider-thumb {
+  background: var(--color-muted);
+  box-shadow: 0 0 0 1px var(--color-muted);
+  cursor: not-allowed;
+}
+
+input[type="range"]:disabled {
+  opacity: 0.5;
+}

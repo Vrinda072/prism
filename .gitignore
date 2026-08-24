@@ -1,0 +1,28 @@
+# Python
+backend/.venv/
+backend/venv/
+__pycache__/
+*.pyc
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Env
+.env
+.env.local
+
+# Model cache (Hugging Face downloads these locally, don't commit them)
+backend/.cache/
+huggingface_cache/
+
+# Temp uploaded images
+backend/app/tmp_uploads/
+
+# Local tooling state
+.claude/scheduled_tasks.lock
