@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react"
-import { ApiError, compareImages, projectEmbeddings, type CompareResponse } from "./api/client"
+import {
+  ApiError,
+  compareImages,
+  getSemanticScores,
+  projectEmbeddings,
+  type CompareResponse,
+  type SemanticResponse,
+} from "./api/client"
 import AnalysisPanel from "./components/AnalysisPanel"
 import ControlsBar from "./components/ControlsBar"
 import EmbeddingTrajectory from "./components/EmbeddingTrajectory"
@@ -9,13 +16,19 @@ import { ApiReference, HowItWorks, Limitations } from "./components/InfoSections
 import ImagePanel from "./components/ImagePanel"
 import ImageSourceBar from "./components/ImageSourceBar"
 import NavBar from "./components/NavBar"
+import SemanticAnalysis from "./components/SemanticAnalysis"
 import { useDebouncedValue } from "./hooks/useDebouncedValue"
 import { applyTransform, loadImageElement } from "./lib/imageTransform"
 import { summarizeTransform } from "./lib/transformSummary"
 import type { Experiment } from "./types/experiment"
 import type { ImageSource } from "./types/image"
+import type { SemanticState } from "./types/semantic"
 import { DEFAULT_TRANSFORM, type TransformState } from "./types/transform"
 import type { TrajectoryPoint } from "./types/trajectory"
+
+function toSemanticState(res: SemanticResponse): SemanticState {
+  return { concepts: res.concepts, topConcept: res.top_concept, confidence: res.confidence, entropy: res.entropy }
+}
 
 const PREVIEW_DEBOUNCE_MS = 60
 const ANALYSIS_DEBOUNCE_MS = 400
@@ -41,6 +54,8 @@ function App() {
   const [trajectory, setTrajectory] = useState<TrajectoryPoint[]>([])
   const [projectedPoints, setProjectedPoints] = useState<[number, number][] | null>(null)
   const [experiments, setExperiments] = useState<Experiment[]>([])
+  const [originalSemantic, setOriginalSemantic] = useState<SemanticState | null>(null)
+  const [transformedSemantic, setTransformedSemantic] = useState<SemanticState | null>(null)
 
   const debouncedPreviewTransform = useDebouncedValue(transform, PREVIEW_DEBOUNCE_MS)
   const debouncedAnalysisTransform = useDebouncedValue(transform, ANALYSIS_DEBOUNCE_MS)
@@ -91,6 +106,26 @@ function App() {
     setAnalysisError(null)
     setTrajectory([])
     setProjectedPoints(null)
+    setOriginalSemantic(null)
+    setTransformedSemantic(null)
+  }, [originalImage])
+
+  // The original image's semantic scores are a fixed baseline — computed
+  // once per image, not re-fetched on every slider tick like the
+  // transformed image's are.
+  useEffect(() => {
+    if (!originalImage) return
+
+    const controller = new AbortController()
+    getSemanticScores(originalImage.blob, controller.signal)
+      .then((res) => setOriginalSemantic(toSemanticState(res)))
+      .catch((err: unknown) => {
+        if (err instanceof DOMException && err.name === "AbortError") return
+        // Semantic analysis is supplementary — leave the panel empty rather
+        // than surfacing a second error path alongside the main analysis.
+      })
+
+    return () => controller.abort()
   }, [originalImage])
 
   // Slow pipeline: once slider changes have settled for ANALYSIS_DEBOUNCE_MS,
@@ -112,10 +147,14 @@ function App() {
       .then((img) => applyTransform(img, debouncedAnalysisTransform))
       .then((transformed) => {
         URL.revokeObjectURL(transformed.url)
-        return compareImages(originalImage.blob, transformed.blob, controller.signal)
+        return Promise.all([
+          compareImages(originalImage.blob, transformed.blob, controller.signal),
+          getSemanticScores(transformed.blob, controller.signal),
+        ])
       })
-      .then((result) => {
+      .then(([result, semanticResult]) => {
         setAnalysis(result)
+        setTransformedSemantic(toSemanticState(semanticResult))
         setTrajectory((prev) => {
           const last = prev[prev.length - 1]
           if (last && transformsEqual(last.transform, debouncedAnalysisTransform)) return prev
@@ -238,12 +277,17 @@ function App() {
       </section>
 
       <section id="numbers" className="border-t border-border px-8 py-16">
-        <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-8 lg:grid-cols-3">
-          <div className="min-h-[320px] lg:col-span-2">
-            <EmbeddingTrajectory points={trajectory} projected={projectedPoints} />
+        <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-8">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <div className="min-h-[320px] lg:col-span-2">
+              <EmbeddingTrajectory points={trajectory} projected={projectedPoints} />
+            </div>
+            <div className="min-h-[320px]">
+              <ExperimentHistory experiments={experiments} onRestore={restoreExperiment} />
+            </div>
           </div>
-          <div className="min-h-[320px]">
-            <ExperimentHistory experiments={experiments} onRestore={restoreExperiment} />
+          <div className="min-h-[220px]">
+            <SemanticAnalysis original={originalSemantic} transformed={transformedSemantic} />
           </div>
         </div>
       </section>

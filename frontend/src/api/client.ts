@@ -23,6 +23,13 @@ export interface ProjectResponse {
   points: [number, number][]
 }
 
+export interface SemanticResponse {
+  concepts: { concept: string; score: number }[]
+  top_concept: string
+  confidence: number
+  entropy: number
+}
+
 async function parseErrorMessage(response: Response): Promise<string> {
   try {
     const body = await response.json()
@@ -65,6 +72,19 @@ export async function projectEmbeddings(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ embeddings }),
+    signal,
+  })
+  if (!response.ok) throw new ApiError(await parseErrorMessage(response))
+  return response.json()
+}
+
+export async function getSemanticScores(image: Blob, signal?: AbortSignal): Promise<SemanticResponse> {
+  const formData = new FormData()
+  formData.append("file", image, "image")
+
+  const response = await fetch(`${API_BASE_URL}/semantic`, {
+    method: "POST",
+    body: formData,
     signal,
   })
   if (!response.ok) throw new ApiError(await parseErrorMessage(response))

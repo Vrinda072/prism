@@ -21,3 +21,15 @@ class CompareResponse(BaseModel):
 class ProjectResponse(BaseModel):
     points: list[list[float]]
 
+
+class ConceptScore(BaseModel):
+    concept: str
+    score: float
+
+
+class SemanticResponse(BaseModel):
+    concepts: list[ConceptScore]
+    top_concept: str
+    confidence: float
+    entropy: float
+
