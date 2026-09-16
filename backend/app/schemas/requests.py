@@ -1,1 +1,5 @@
-# Pydantic request models for /analyze and /compare.
+from pydantic import BaseModel
+
+
+class ProjectRequest(BaseModel):
+    embeddings: list[list[float]]

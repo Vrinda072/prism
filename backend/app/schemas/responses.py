@@ -14,4 +14,10 @@ class CompareResponse(BaseModel):
     latency_ms: float
     embedding_dimension: int
     model: str
+    original_embedding: list[float]
+    transformed_embedding: list[float]
+
+
+class ProjectResponse(BaseModel):
+    points: list[list[float]]
 

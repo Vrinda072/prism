@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import analyze
+from app.api import analyze, project
 from app.services.model_service import ModelService
 
 
@@ -25,6 +25,7 @@ app.add_middleware(
 )
 
 app.include_router(analyze.router)
+app.include_router(project.router)
 
 
 @app.get("/health")
