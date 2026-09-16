@@ -15,6 +15,12 @@ export interface CompareResponse {
   latency_ms: number
   embedding_dimension: number
   model: string
+  original_embedding: number[]
+  transformed_embedding: number[]
+}
+
+export interface ProjectResponse {
+  points: [number, number][]
 }
 
 async function parseErrorMessage(response: Response): Promise<string> {
@@ -45,6 +51,20 @@ export async function compareImages(
   const response = await fetch(`${API_BASE_URL}/compare`, {
     method: "POST",
     body: formData,
+    signal,
+  })
+  if (!response.ok) throw new ApiError(await parseErrorMessage(response))
+  return response.json()
+}
+
+export async function projectEmbeddings(
+  embeddings: number[][],
+  signal?: AbortSignal,
+): Promise<ProjectResponse> {
+  const response = await fetch(`${API_BASE_URL}/project`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ embeddings }),
     signal,
   })
   if (!response.ok) throw new ApiError(await parseErrorMessage(response))

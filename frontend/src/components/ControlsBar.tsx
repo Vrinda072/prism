@@ -17,17 +17,22 @@ const CONTROLS: { key: keyof TransformState; label: string }[] = [
 
 export default function ControlsBar({ transform, onChange, disabled = false }: ControlsBarProps) {
   return (
-    <section className="border-t border-border">
-      <div className="mx-auto grid w-full max-w-[1400px] grid-cols-2 gap-x-8 gap-y-6 px-8 py-6 sm:grid-cols-3 lg:grid-cols-5">
-        {CONTROLS.map(({ key, label }) => (
-          <ControlSlider
-            key={key}
-            label={label}
-            value={transform[key]}
-            disabled={disabled}
-            onChange={(value) => onChange({ ...transform, [key]: value })}
-          />
-        ))}
+    <section className="border-t border-border bg-panel" style={{ boxShadow: "var(--shadow-panel-raised)" }}>
+      <div className="mx-auto w-full max-w-[1400px] px-8 py-6">
+        <span className="mb-4 block text-[11px] font-medium uppercase tracking-widest text-muted">
+          Perturbations
+        </span>
+        <div className="grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-3 lg:grid-cols-5">
+          {CONTROLS.map(({ key, label }) => (
+            <ControlSlider
+              key={key}
+              label={label}
+              value={transform[key]}
+              disabled={disabled}
+              onChange={(value) => onChange({ ...transform, [key]: value })}
+            />
+          ))}
+        </div>
       </div>
     </section>
   )

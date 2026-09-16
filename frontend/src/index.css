@@ -6,26 +6,52 @@
   --color-muted: #6b6659;
   --color-border: #e2dfd3;
   --color-panel: #fbfaf7;
+  --color-panel-raised: #ffffff;
   --color-accent: #ff4b2b;
+  --color-accent-soft: rgb(255 75 43 / 8%);
   /* Darker than --color-accent specifically for text (error messages) —
      the brand red at full saturation fails WCAG AA (4.5:1) for text on
      paper, though it's fine for the non-text uses (dots, borders). */
   --color-accent-text: #c2321a;
+  --color-positive: #2f7a4f;
+  --color-positive-soft: rgb(47 122 79 / 10%);
+
+  /* Elevation is expressed as a soft, low-contrast shadow — never a
+     gradient or a glow. In dark mode a drop shadow reads as nothing
+     against near-black, so depth there comes from a faint inset top
+     highlight (a bevel) plus a slightly stronger ambient shadow. */
+  --shadow-panel: 0 1px 2px rgb(22 21 15 / 5%), 0 1px 1px rgb(22 21 15 / 4%);
+  --shadow-panel-raised: 0 2px 6px rgb(22 21 15 / 7%), 0 1px 2px rgb(22 21 15 / 5%);
 
   --font-heading: "Space Grotesk", system-ui, sans-serif;
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
+/* Dark-mode overrides as plain CSS custom properties on :root, NOT nested
+   inside another @theme block. Tailwind v4's @theme is a build-time
+   construct — nesting it inside @media gets flattened away entirely during
+   compilation (the media query is silently dropped and the last-declared
+   value wins unconditionally), which would make this whole block dead code.
+   Utilities generated from the base @theme above reference var(--color-*),
+   and plain custom properties DO correctly cascade through @media at
+   runtime, so overriding them here (outside @theme) is what actually works. */
 @media (prefers-color-scheme: dark) {
-  @theme {
-    --color-paper: #100f0c;
+  :root {
+    --color-paper: #0d0c0a;
     --color-ink: #f5f3ec;
-    --color-muted: #8f8a78;
-    --color-border: #2a2820;
-    --color-panel: #161510;
+    --color-muted: #928d7a;
+    --color-border: #29271f;
+    --color-panel: #141310;
+    --color-panel-raised: #1a1815;
     --color-accent: #ff6a45;
+    --color-accent-soft: rgb(255 106 69 / 10%);
     --color-accent-text: #ff6a45; /* already passes AA against dark paper */
+    --color-positive: #4fae79;
+    --color-positive-soft: rgb(79 174 121 / 12%);
+
+    --shadow-panel: inset 0 1px 0 rgb(255 255 255 / 3%), 0 2px 8px rgb(0 0 0 / 35%);
+    --shadow-panel-raised: inset 0 1px 0 rgb(255 255 255 / 5%), 0 6px 20px rgb(0 0 0 / 45%);
   }
 }
 
@@ -41,6 +67,40 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+/* Crossfade for a newly rendered image (key-remount pattern) and a brief
+   highlight flash for a metric that just changed — both communicate real
+   data movement, not decoration. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes highlight-flash {
+  0% {
+    background-color: var(--flash-color, var(--color-accent-soft));
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.highlight-flash {
+  animation: highlight-flash 700ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Custom range slider: thin track, small thumb, accent-colored — the

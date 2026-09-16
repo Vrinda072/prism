@@ -70,4 +70,6 @@ async def compare(
         latency_ms=round(latency_ms, 2),
         embedding_dimension=original_embedding.shape[0],
         model=model_service.model_name,
+        original_embedding=original_embedding.tolist(),
+        transformed_embedding=transformed_embedding.tolist(),
     )
