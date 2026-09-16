@@ -218,6 +218,9 @@ function App() {
       transform,
       similarity: analysis.similarity,
       drift: analysis.drift,
+      topConcept: transformedSemantic
+        ? { concept: transformedSemantic.topConcept, score: transformedSemantic.confidence }
+        : undefined,
     }
     setExperiments((prev) => [...prev, experiment])
   }

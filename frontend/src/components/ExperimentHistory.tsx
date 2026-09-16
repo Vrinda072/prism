@@ -52,9 +52,14 @@ export default function ExperimentHistory({ experiments, onRestore }: Experiment
                     <span className="shrink-0 text-[10px] text-muted">{relativeTime(exp.createdAt)}</span>
                   </div>
                   <span className="truncate text-xs text-muted">{summarizeTransform(exp.transform)}</span>
-                  <div className="mt-1 flex gap-4 font-mono text-xs text-ink">
+                  <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-ink">
                     <span>{(exp.similarity * 100).toFixed(1)}% sim</span>
                     <span>{(exp.drift * 100).toFixed(1)}% drift</span>
+                    {exp.topConcept && (
+                      <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[10px] text-accent-text capitalize">
+                        {exp.topConcept.concept}
+                      </span>
+                    )}
                   </div>
                 </button>
               </li>

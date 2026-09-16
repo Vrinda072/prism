@@ -63,6 +63,11 @@ const ENDPOINTS: Endpoint[] = [
     path: "/project",
     description: "A set of embeddings in, PCA-projected 2D points out (sign-stabilized across calls).",
   },
+  {
+    method: "POST",
+    path: "/semantic",
+    description: "One image in, CLIP zero-shot scores against a fixed 6-concept set, plus confidence and entropy.",
+  },
 ]
 
 export function ApiReference() {
@@ -93,6 +98,7 @@ const LIMITATIONS = [
   "Experiment history lives in memory for this browser session only; it's gone on refresh.",
   "Canvas-based perturbations approximate real-world image corruption — they aren't a literal camera-sensor or codec simulation.",
   "The embedding trajectory's axes come from PCA on whatever points exist so far — only relative positions and distances are meaningful, not the axes themselves.",
+  "Semantic Analysis and the Robustness Sweep score against a small fixed set of six concepts — a real zero-shot classification, not a general-purpose one.",
 ]
 
 export function Limitations() {
