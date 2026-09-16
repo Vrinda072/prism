@@ -1,15 +1,17 @@
+import InfoTip from "./InfoTip"
 import Panel from "./Panel"
 
 interface ImagePanelProps {
   label: string
+  tip?: string
   imageUrl: string | null
   emptyMessage: string
   accentIntensity?: number
 }
 
-export default function ImagePanel({ label, imageUrl, emptyMessage, accentIntensity }: ImagePanelProps) {
+export default function ImagePanel({ label, tip, imageUrl, emptyMessage, accentIntensity }: ImagePanelProps) {
   return (
-    <Panel label={label} accentIntensity={accentIntensity}>
+    <Panel label={tip ? <InfoTip text={tip}>{label}</InfoTip> : label} accentIntensity={accentIntensity}>
       <div className="flex flex-1 min-h-[360px] items-center justify-center overflow-hidden lg:min-h-[480px]">
         {imageUrl ? (
           <img

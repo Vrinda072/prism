@@ -192,12 +192,18 @@ function App() {
 
       <main className="mx-auto grid w-full max-w-[1400px] flex-1 grid-cols-1 lg:grid-cols-[1fr_1fr_340px]">
         <section className="border-b border-border p-8 lg:border-b-0 lg:border-r">
-          <ImagePanel label="Original" imageUrl={originalImage?.url ?? null} emptyMessage="Choose an image to begin." />
+          <ImagePanel
+            label="Original"
+            tip="The untouched source image, exactly as chosen or uploaded — CLIP's understanding of this image is the fixed baseline every perturbation is measured against."
+            imageUrl={originalImage?.url ?? null}
+            emptyMessage="Choose an image to begin."
+          />
         </section>
 
         <section className="border-b border-border p-8 lg:border-b-0 lg:border-r">
           <ImagePanel
             label="Live Transformation"
+            tip="The original image with the sliders' distortions applied to real pixels, rendered live as you drag. The border tints toward red as representation drift increases — a visual echo of the number below."
             imageUrl={transformedImage?.url ?? null}
             emptyMessage="Your transformed image will appear here."
             accentIntensity={analysis?.drift}

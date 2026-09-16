@@ -40,8 +40,8 @@ export default function ExperimentHistory({ experiments, onRestore }: Experiment
           </div>
         ) : (
           <ul className="flex flex-col">
-            {[...experiments].reverse().map((exp) => (
-              <li key={exp.id}>
+            {[...experiments].reverse().map((exp, i) => (
+              <li key={exp.id} className={i === 0 ? "rise-in highlight-flash" : ""}>
                 <button
                   type="button"
                   onClick={() => onRestore(exp)}

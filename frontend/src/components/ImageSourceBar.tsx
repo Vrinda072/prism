@@ -1,8 +1,12 @@
 import { useRef, useState } from "react"
 import { SAMPLE_IMAGES } from "../data/sampleImages"
 import type { ImageSource } from "../types/image"
+import InfoTip from "./InfoTip"
 
 const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/webp"]
+
+const SAMPLES_TIP =
+  "Pick one of these, or upload your own — either way, the same real CLIP model analyzes it. These are just a quick way to start exploring without finding your own file."
 
 interface ImageSourceBarProps {
   onSelect: (image: ImageSource) => void
@@ -38,7 +42,9 @@ export default function ImageSourceBar({ onSelect }: ImageSourceBarProps) {
   return (
     <div className="flex flex-col gap-4 border-b border-border px-8 py-5 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
-        <span className="text-[11px] uppercase tracking-widest text-muted">Sample Images</span>
+        <span className="text-[11px] uppercase tracking-widest text-muted">
+          <InfoTip text={SAMPLES_TIP}>Sample Images</InfoTip>
+        </span>
         <div className="flex gap-2">
           {SAMPLE_IMAGES.map((sample) => (
             <button
