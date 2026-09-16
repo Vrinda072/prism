@@ -8,16 +8,17 @@ import Panel from "./Panel"
 interface FlashState {
   key: number
   direction: "up" | "down" | null
+  delta: number | null
 }
 
 function useFlashOnChange(value: number | null): FlashState {
-  const [state, setState] = useState<FlashState>({ key: 0, direction: null })
+  const [state, setState] = useState<FlashState>({ key: 0, direction: null, delta: null })
   const prevRef = useRef(value)
 
   useEffect(() => {
     const prev = prevRef.current
     if (prev !== null && value !== null && prev !== value) {
-      setState((s) => ({ key: s.key + 1, direction: value > prev ? "up" : "down" }))
+      setState((s) => ({ key: s.key + 1, direction: value > prev ? "up" : "down", delta: value - prev }))
     }
     prevRef.current = value
   }, [value])
@@ -32,14 +33,20 @@ interface MetricProps {
   rawValue: number | null
   first?: boolean
   staggerMs: number
+  /** When set, a "+2.3%"-style badge briefly appears showing the change
+   * since the previous value — omit for metrics where a delta wouldn't be
+   * meaningful (inference time, the constant embedding dimension). */
+  deltaUnit?: string
 }
 
-function Metric({ label, tip, value, rawValue, first = false, staggerMs }: MetricProps) {
-  const { key, direction } = useFlashOnChange(rawValue)
+function Metric({ label, tip, value, rawValue, first = false, staggerMs, deltaUnit }: MetricProps) {
+  const { key, direction, delta } = useFlashOnChange(rawValue)
   const flashStyle = {
     "--flash-color": direction === "up" ? "var(--color-positive-soft)" : "var(--color-accent-soft)",
     "--stagger-delay": `${staggerMs}ms`,
   } as CSSProperties
+  const deltaLabel =
+    delta !== null && deltaUnit ? `${delta > 0 ? "+" : ""}${delta.toFixed(1)}${deltaUnit}` : null
 
   return (
     <div className={`rise-in py-3 ${first ? "" : "border-t border-border"}`} style={flashStyle}>
@@ -47,7 +54,18 @@ function Metric({ label, tip, value, rawValue, first = false, staggerMs }: Metri
         <InfoTip text={tip}>{label}</InfoTip>
       </div>
       <div key={key} className={key > 0 ? "highlight-flash -mx-1 px-1" : ""} style={flashStyle}>
-        <div className="mt-1 font-mono text-2xl tabular-nums text-ink">{value}</div>
+        <div className="mt-1 flex items-baseline gap-2">
+          <span className="font-mono text-2xl tabular-nums text-ink">{value}</span>
+          {deltaLabel && (
+            <span
+              key={key}
+              className="animate-[delta-fade_2200ms_ease-out_forwards] font-mono text-xs tabular-nums"
+              style={{ color: direction === "up" ? "var(--color-positive)" : "var(--color-accent-text)" }}
+            >
+              {deltaLabel}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -123,13 +141,19 @@ export default function AnalysisPanel({
               </button>
             </form>
           ) : (
-            <button
-              type="button"
-              onClick={startNaming}
-              className="text-[11px] font-medium uppercase tracking-widest text-muted transition-colors hover:text-ink"
+            <InfoTip
+              text="Save the current image and perturbation settings to Experiment History, so you can come back and restore this exact configuration later in this session."
+              position="bottom"
+              plain
             >
-              Save
-            </button>
+              <button
+                type="button"
+                onClick={startNaming}
+                className="text-[11px] font-medium uppercase tracking-widest text-muted transition-colors hover:text-ink"
+              >
+                Save
+              </button>
+            </InfoTip>
           )
         ) : null
       }
@@ -144,6 +168,7 @@ export default function AnalysisPanel({
             value={similarityValue}
             rawValue={similarityRaw}
             staggerMs={0}
+            deltaUnit="%"
             first
           />
           <Metric
@@ -152,6 +177,7 @@ export default function AnalysisPanel({
             value={driftValue}
             rawValue={driftRaw}
             staggerMs={70}
+            deltaUnit="%"
           />
           <Metric
             label="Inference"

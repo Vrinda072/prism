@@ -200,6 +200,7 @@ function App() {
             label="Live Transformation"
             imageUrl={transformedImage?.url ?? null}
             emptyMessage="Your transformed image will appear here."
+            accentIntensity={analysis?.drift}
           />
         </section>
 

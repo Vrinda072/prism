@@ -5,17 +5,20 @@ interface InfoTipProps {
   text: string
   position?: "top" | "bottom"
   className?: string
+  /** Skip the dotted-underline decoration — for wrapping an element that
+   * already has its own clear affordance (a button), rather than plain text. */
+  plain?: boolean
 }
 
 /** Wraps a label in a dotted-underline hover/focus target that reveals a
  * short explanation — the app's "hovering text" teaching mechanism. */
-export default function InfoTip({ children, text, position = "top", className = "" }: InfoTipProps) {
+export default function InfoTip({ children, text, position = "top", className = "", plain = false }: InfoTipProps) {
   const [visible, setVisible] = useState(false)
   const tooltipId = useId()
 
   return (
     <span
-      className={`relative inline-flex cursor-help border-b border-dotted border-muted ${className}`}
+      className={`relative inline-flex ${plain ? "" : "cursor-help border-b border-dotted border-muted"} ${className}`}
       tabIndex={0}
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}

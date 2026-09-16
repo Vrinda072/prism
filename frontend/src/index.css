@@ -131,6 +131,26 @@ body {
   }
 }
 
+/* A metric's change-since-last-value badge: readable for a beat, then
+   fades — long enough to notice and read, short enough to stay out of the
+   way once it's served its purpose. */
+@keyframes delta-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 @keyframes point-in {
   from {
     opacity: 0;

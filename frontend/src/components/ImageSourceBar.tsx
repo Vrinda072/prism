@@ -47,6 +47,7 @@ export default function ImageSourceBar({ onSelect }: ImageSourceBarProps) {
               onClick={() => handleSample(sample.id, sample.src)}
               aria-label={`Use sample image: ${sample.label}`}
               aria-pressed={activeSampleId === sample.id}
+              title={sample.label}
               className={`h-10 w-10 overflow-hidden border transition ${
                 activeSampleId === sample.id ? "border-accent" : "border-border hover:border-ink"
               }`}

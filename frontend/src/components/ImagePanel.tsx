@@ -4,11 +4,12 @@ interface ImagePanelProps {
   label: string
   imageUrl: string | null
   emptyMessage: string
+  accentIntensity?: number
 }
 
-export default function ImagePanel({ label, imageUrl, emptyMessage }: ImagePanelProps) {
+export default function ImagePanel({ label, imageUrl, emptyMessage, accentIntensity }: ImagePanelProps) {
   return (
-    <Panel label={label}>
+    <Panel label={label} accentIntensity={accentIntensity}>
       <div className="flex flex-1 min-h-[360px] items-center justify-center overflow-hidden lg:min-h-[480px]">
         {imageUrl ? (
           <img

@@ -1,6 +1,10 @@
 import ControlSlider from "./ControlSlider"
+import InfoTip from "./InfoTip"
 import Panel from "./Panel"
 import type { TransformState } from "../types/transform"
+
+const PANEL_TIP =
+  "Each slider distorts the image by a different amount, applied on real pixels — not a preview trick. After you stop dragging, the transformed image is sent to CLIP for genuine re-analysis."
 
 interface ControlsBarProps {
   transform: TransformState
@@ -38,7 +42,7 @@ const CONTROLS: { key: keyof TransformState; label: string; tip: string }[] = [
 
 export default function ControlsBar({ transform, onChange, disabled = false }: ControlsBarProps) {
   return (
-    <Panel label="Perturbations">
+    <Panel label={<InfoTip text={PANEL_TIP}>Perturbations</InfoTip>}>
       <div className="flex flex-col gap-5 p-5">
         {CONTROLS.map(({ key, label, tip }, i) => (
           <ControlSlider
