@@ -3,7 +3,6 @@ const NAV_LINKS = [
   { href: "#how-it-works", label: "How it works" },
   { href: "#numbers", label: "Numbers" },
   { href: "#api", label: "API" },
-  { href: "#limitations", label: "Limitations" },
 ]
 
 const REPO_URL = "https://github.com/Vrinda072/prism"

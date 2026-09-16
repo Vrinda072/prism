@@ -12,7 +12,7 @@ import ControlsBar from "./components/ControlsBar"
 import EmbeddingTrajectory from "./components/EmbeddingTrajectory"
 import ExperimentHistory from "./components/ExperimentHistory"
 import Hero from "./components/Hero"
-import { ApiReference, HowItWorks, Limitations } from "./components/InfoSections"
+import { ApiReference, HowItWorks } from "./components/InfoSections"
 import ImagePanel from "./components/ImagePanel"
 import ImageSourceBar from "./components/ImageSourceBar"
 import NavBar from "./components/NavBar"
@@ -301,7 +301,6 @@ function App() {
       </section>
 
       <ApiReference />
-      <Limitations />
     </div>
   )
 }

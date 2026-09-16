@@ -93,29 +93,3 @@ export function ApiReference() {
   )
 }
 
-const LIMITATIONS = [
-  "Inference runs on one local CLIP ViT-B/32 model — no larger model, no ensemble, no cloud API.",
-  "Experiment history lives in memory for this browser session only; it's gone on refresh.",
-  "Canvas-based perturbations approximate real-world image corruption — they aren't a literal camera-sensor or codec simulation.",
-  "The embedding trajectory's axes come from PCA on whatever points exist so far — only relative positions and distances are meaningful, not the axes themselves.",
-  "Semantic Analysis and the Robustness Sweep score against a small fixed set of six concepts — a real zero-shot classification, not a general-purpose one.",
-]
-
-export function Limitations() {
-  return (
-    <section id="limitations" className="border-t border-border px-8 py-20">
-      <div className="mx-auto max-w-3xl">
-        <h2 className="font-heading text-3xl font-bold text-ink">Limitations</h2>
-        <p className="mt-3 text-muted">Stated plainly, not hidden in a footnote.</p>
-        <ul className="mt-10 flex flex-col gap-4">
-          {LIMITATIONS.map((item) => (
-            <li key={item} className="flex gap-3 text-sm leading-relaxed text-muted">
-              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-accent" />
-              {item}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  )
-}
