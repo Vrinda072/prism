@@ -2,6 +2,7 @@ export interface TransformState {
   blur: number
   noise: number
   brightness: number
+  contrast: number
   rotation: number
   compression: number
 }
@@ -10,6 +11,7 @@ export const DEFAULT_TRANSFORM: TransformState = {
   blur: 0,
   noise: 0,
   brightness: 0,
+  contrast: 0,
   rotation: 0,
   compression: 0,
 }

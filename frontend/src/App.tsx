@@ -40,6 +40,7 @@ function transformsEqual(a: TransformState, b: TransformState): boolean {
     a.blur === b.blur &&
     a.noise === b.noise &&
     a.brightness === b.brightness &&
+    a.contrast === b.contrast &&
     a.rotation === b.rotation &&
     a.compression === b.compression
   )

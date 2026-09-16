@@ -29,6 +29,11 @@ const CONTROLS: { key: keyof TransformState; label: string; tip: string }[] = [
     tip: "Shifts overall exposure. At 100% intensity, the image is brightened to 220% of its normal level.",
   },
   {
+    key: "contrast",
+    label: "Contrast",
+    tip: "Stretches the gap between light and dark tones. At 100% intensity, contrast is boosted to 300% of normal — a standard corruption type, not a stylistic filter.",
+  },
+  {
     key: "rotation",
     label: "Rotation",
     tip: "Rotates the image around its center, up to 45° at full intensity. Corners exposed by the rotation are filled white.",

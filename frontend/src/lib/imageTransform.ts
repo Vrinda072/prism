@@ -6,6 +6,7 @@ export const TRANSFORM_CONFIG = {
   maxBlurPx: 20,
   maxNoiseStdDev: 45, // std. deviation added per RGB channel, in 0–255 units
   maxBrightnessPercent: 220, // 100% = unchanged
+  maxContrastPercent: 300, // 100% = unchanged
   maxRotationDegrees: 45,
   minJpegQuality: 0.1, // compression = 1 encodes at this quality
 } as const
@@ -105,6 +106,7 @@ export async function applyTransform(
 
   const blurPx = transform.blur * TRANSFORM_CONFIG.maxBlurPx
   const brightnessPercent = 100 + transform.brightness * (TRANSFORM_CONFIG.maxBrightnessPercent - 100)
+  const contrastPercent = 100 + transform.contrast * (TRANSFORM_CONFIG.maxContrastPercent - 100)
   const rotationDegrees = transform.rotation * TRANSFORM_CONFIG.maxRotationDegrees
 
   // Rotation can expose corners outside the source image — filled white.
@@ -112,7 +114,7 @@ export async function applyTransform(
   ctx.fillRect(0, 0, width, height)
 
   ctx.save()
-  ctx.filter = `brightness(${brightnessPercent}%) blur(${blurPx}px)`
+  ctx.filter = `brightness(${brightnessPercent}%) contrast(${contrastPercent}%) blur(${blurPx}px)`
   ctx.translate(width / 2, height / 2)
   ctx.rotate((rotationDegrees * Math.PI) / 180)
   ctx.drawImage(img, -width / 2, -height / 2, width, height)

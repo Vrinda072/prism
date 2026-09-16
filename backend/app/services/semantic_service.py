@@ -10,7 +10,22 @@ from app.services.model_service import ModelService
 # Not user-editable: keeping this small and fixed is what keeps the
 # resulting scores honest rather than an open-ended classifier.
 CONCEPTS = ["flower", "animal", "vehicle", "person", "building", "food"]
-PROMPT_TEMPLATE = "a photo of a {}"
+
+# Prompt ensembling, per the CLIP Robustness Study reference (Eishaan-Khatri/
+# IACV_CLIP_Robustness_Study): a single bare template is more sensitive to
+# incidental prompt wording than an average over several. Each concept's text
+# embedding is the mean of these 8 templates, renormalized — not just the
+# first template's embedding.
+PROMPT_TEMPLATES = [
+    "a photo of a {}.",
+    "a blurry photo of a {}.",
+    "a low resolution photo of a {}.",
+    "a corrupted photo of a {}.",
+    "a photo of the small {}.",
+    "a photo of the large {}.",
+    "a photo of the object {}.",
+    "an image of a {}.",
+]
 
 
 @torch.no_grad()
@@ -22,9 +37,16 @@ def get_text_embedding(model_service: ModelService, text: str) -> torch.Tensor:
 
 
 @torch.no_grad()
+def get_ensembled_text_embedding(model_service: ModelService, concept: str) -> torch.Tensor:
+    """Average this concept's embedding over all prompt templates, then renormalize."""
+    embeddings = torch.stack([get_text_embedding(model_service, template.format(concept)) for template in PROMPT_TEMPLATES])
+    return torch.nn.functional.normalize(embeddings.mean(dim=0), dim=-1)
+
+
+@torch.no_grad()
 def build_concept_embeddings(model_service: ModelService) -> torch.Tensor:
-    """Precompute and stack the fixed concept set's text embeddings once at startup."""
-    embeddings = [get_text_embedding(model_service, PROMPT_TEMPLATE.format(c)) for c in CONCEPTS]
+    """Precompute and stack the fixed concept set's ensembled text embeddings once at startup."""
+    embeddings = [get_ensembled_text_embedding(model_service, c) for c in CONCEPTS]
     return torch.stack(embeddings)
 
 
