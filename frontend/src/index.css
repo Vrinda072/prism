@@ -1,20 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #fbe4ea;
-  --color-ink: #2b0f1e;
-  --color-muted: #7a5866;
-  --color-border: #f0d2dc;
-  --color-panel: #fdf0f4;
-  --color-panel-raised: #fffafb;
-  --color-accent: #c23a5e;
-  --color-accent-soft: rgb(194 58 94 / 10%);
+  --color-paper: #f2ecdb;
+  --color-ink: #34141c;
+  --color-muted: #5c4f3d;
+  --color-border: #ddd0b0;
+  --color-panel: #f8f4e6;
+  --color-panel-raised: #fffcf3;
+  --color-accent: #7a2331;
+  --color-accent-soft: rgb(122 35 49 / 10%);
   /* Darker than --color-accent specifically for text (error messages) —
-     the brand rose at full saturation fails WCAG AA (4.5:1) for text on
-     paper, though it's fine for the non-text uses (dots, borders). */
-  --color-accent-text: #9c2c49;
-  --color-positive: #4f7a5e;
-  --color-positive-soft: rgb(79 122 94 / 10%);
+     kept as a distinct token even though the maroon itself already passes
+     AA on beige, for a safety margin and consistency with the dark-mode
+     variant below, where it genuinely is needed. */
+  --color-accent-text: #5c1b26;
+  --color-positive: #4f6b4f;
+  --color-positive-soft: rgb(79 107 79 / 10%);
 
   /* Elevation is expressed as a soft, low-contrast shadow — never a
      gradient or a glow. In dark mode a drop shadow reads as nothing
@@ -38,17 +39,17 @@
    runtime, so overriding them here (outside @theme) is what actually works. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-paper: #1c0f16;
-    --color-ink: #f7e9ee;
-    --color-muted: #b08d98;
-    --color-border: #3a2028;
-    --color-panel: #241318;
-    --color-panel-raised: #2c171d;
-    --color-accent: #ff6f91;
-    --color-accent-soft: rgb(255 111 145 / 12%);
-    --color-accent-text: #ff6f91; /* already passes AA against dark paper */
-    --color-positive: #5fbf8a;
-    --color-positive-soft: rgb(95 191 138 / 12%);
+    --color-paper: #1a1512;
+    --color-ink: #f0e9d8;
+    --color-muted: #a89a86;
+    --color-border: #3a3129;
+    --color-panel: #211b16;
+    --color-panel-raised: #29221b;
+    --color-accent: #c05262;
+    --color-accent-soft: rgb(192 82 98 / 12%);
+    --color-accent-text: #c05262; /* already passes AA against dark paper */
+    --color-positive: #6b9b6b;
+    --color-positive-soft: rgb(107 155 107 / 12%);
 
     --shadow-panel: inset 0 1px 0 rgb(255 255 255 / 3%), 0 2px 8px rgb(0 0 0 / 35%);
     --shadow-panel-raised: inset 0 1px 0 rgb(255 255 255 / 5%), 0 6px 20px rgb(0 0 0 / 45%);
