@@ -4,7 +4,7 @@ export interface SampleImage {
   src: string
 }
 
-// Placeholder abstract art — swap for real curated photography before ship.
+// Real photography from Wikimedia Commons — see public/samples/CREDITS.md for attribution.
 export const SAMPLE_IMAGES: SampleImage[] = [
   { id: "animal", label: "Animal", src: "/samples/animal.jpg" },
   { id: "vehicle", label: "Vehicle", src: "/samples/vehicle.jpg" },
