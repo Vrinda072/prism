@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react"
 import type { CompareResponse } from "../api/client"
 import { useAnimatedNumber } from "../hooks/useAnimatedNumber"
 import DriftVisualization from "./DriftVisualization"
+import InfoTip from "./InfoTip"
 import Panel from "./Panel"
 
 interface FlashState {
@@ -26,20 +27,25 @@ function useFlashOnChange(value: number | null): FlashState {
 
 interface MetricProps {
   label: string
+  tip: string
   value: string
   rawValue: number | null
   first?: boolean
+  staggerMs: number
 }
 
-function Metric({ label, value, rawValue, first = false }: MetricProps) {
+function Metric({ label, tip, value, rawValue, first = false, staggerMs }: MetricProps) {
   const { key, direction } = useFlashOnChange(rawValue)
   const flashStyle = {
     "--flash-color": direction === "up" ? "var(--color-positive-soft)" : "var(--color-accent-soft)",
+    "--stagger-delay": `${staggerMs}ms`,
   } as CSSProperties
 
   return (
-    <div className={`py-3 ${first ? "" : "border-t border-border"}`}>
-      <div className="text-xs text-muted">{label}</div>
+    <div className={`rise-in py-3 ${first ? "" : "border-t border-border"}`} style={flashStyle}>
+      <div className="text-xs text-muted">
+        <InfoTip text={tip}>{label}</InfoTip>
+      </div>
       <div key={key} className={key > 0 ? "highlight-flash -mx-1 px-1" : ""} style={flashStyle}>
         <div className="mt-1 font-mono text-2xl tabular-nums text-ink">{value}</div>
       </div>
@@ -129,11 +135,38 @@ export default function AnalysisPanel({
       }
     >
       <div className="flex flex-1 flex-col p-5">
-        <div className="flex flex-col">
-          <Metric label="Semantic Similarity" value={similarityValue} rawValue={similarityRaw} first />
-          <Metric label="Representation Drift" value={driftValue} rawValue={driftRaw} />
-          <Metric label="Inference" value={latencyValue} rawValue={latencyRaw} />
-          <Metric label="Embedding" value="512 dimensions" rawValue={null} />
+        {/* Re-keyed when an image is first chosen, so the metrics stagger in
+            together rather than sitting static from initial page load. */}
+        <div key={hasImage ? "active" : "empty"} className="flex flex-col">
+          <Metric
+            label="Semantic Similarity"
+            tip="How closely the model's understanding of the transformed image matches the original, measured as cosine similarity between their CLIP embeddings. 100% means the model sees them as identical."
+            value={similarityValue}
+            rawValue={similarityRaw}
+            staggerMs={0}
+            first
+          />
+          <Metric
+            label="Representation Drift"
+            tip="How much the model's understanding has shifted: drift = 1 − similarity. Higher drift means the transformation changed what CLIP 'sees' more significantly — not necessarily what a human would notice most."
+            value={driftValue}
+            rawValue={driftRaw}
+            staggerMs={70}
+          />
+          <Metric
+            label="Inference"
+            tip="Real wall-clock time for the backend to run both images through CLIP and compare them — not a simulated or fixed number."
+            value={latencyValue}
+            rawValue={latencyRaw}
+            staggerMs={140}
+          />
+          <Metric
+            label="Embedding"
+            tip="CLIP converts each image into a list of 512 numbers — its embedding — capturing what the model believes the image is about. Visually similar images tend to produce similar embeddings."
+            value="512 dimensions"
+            rawValue={null}
+            staggerMs={210}
+          />
         </div>
 
         {hasImage && <DriftVisualization drift={result?.drift ?? null} />}

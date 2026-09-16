@@ -1,19 +1,36 @@
+import type { CSSProperties } from "react"
+import InfoTip from "./InfoTip"
+
 interface ControlSliderProps {
   label: string
+  tip: string
   value: number // 0–1
   onChange: (value: number) => void
   disabled?: boolean
+  staggerMs?: number
 }
 
-export default function ControlSlider({ label, value, onChange, disabled = false }: ControlSliderProps) {
+export default function ControlSlider({
+  label,
+  tip,
+  value,
+  onChange,
+  disabled = false,
+  staggerMs = 0,
+}: ControlSliderProps) {
   const percent = Math.round(value * 100)
   const inputId = `control-${label.toLowerCase()}`
 
   return (
-    <div className="flex min-w-0 flex-col gap-2">
+    <div
+      className="rise-in flex min-w-0 flex-col gap-2"
+      style={{ "--stagger-delay": `${staggerMs}ms` } as CSSProperties}
+    >
       <div className="flex items-baseline justify-between">
         <label htmlFor={inputId} className="text-xs text-muted">
-          {label}
+          <InfoTip text={tip} position="bottom">
+            {label}
+          </InfoTip>
         </label>
         <span className="font-mono text-xs text-ink">{percent}%</span>
       </div>

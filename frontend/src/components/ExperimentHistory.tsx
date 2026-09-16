@@ -1,6 +1,10 @@
 import { summarizeTransform } from "../lib/transformSummary"
 import type { Experiment } from "../types/experiment"
+import InfoTip from "./InfoTip"
 import Panel from "./Panel"
+
+const TIP =
+  "Saved runs, kept in memory for this browser session only — nothing is sent to a server or written to disk. Click one to restore its image and perturbation settings exactly."
 
 interface ExperimentHistoryProps {
   experiments: Experiment[]
@@ -20,7 +24,7 @@ function relativeTime(timestamp: number): string {
 export default function ExperimentHistory({ experiments, onRestore }: ExperimentHistoryProps) {
   return (
     <Panel
-      label="Experiment History"
+      label={<InfoTip text={TIP}>Experiment History</InfoTip>}
       headerRight={
         <span className="text-[11px] uppercase tracking-widest text-muted">
           {experiments.length > 0 ? experiments.length : ""}

@@ -94,6 +94,54 @@ body {
   animation: highlight-flash 700ms ease-out;
 }
 
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* A row entering the page for the first time — used for the metric list and
+   the perturbation sliders, staggered per-row via --stagger-delay. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rise-in {
+  animation: rise-in 400ms ease-out both;
+  animation-delay: var(--stagger-delay, 0ms);
+}
+
+/* Embedding Trajectory: the connecting line drawing itself, and a new point
+   growing into place — both tied to real data arriving, not decorative. */
+@keyframes draw-path {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes point-in {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

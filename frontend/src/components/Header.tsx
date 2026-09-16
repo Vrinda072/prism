@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { checkHealth } from "../api/client"
+import InfoTip from "./InfoTip"
 
 type ModelStatus = "checking" | "online" | "offline"
 
@@ -49,7 +50,14 @@ export default function Header() {
         </div>
         <div className="text-left sm:text-right">
           <div className="text-[11px] uppercase tracking-widest text-muted">Model</div>
-          <div className="mt-1 font-mono text-sm text-ink">CLIP ViT-B/32</div>
+          <div className="mt-1 font-mono text-sm text-ink">
+            <InfoTip
+              text="CLIP (Contrastive Language-Image Pretraining), built by OpenAI, learns to represent images and text in the same numerical space. This is the ViT-B/32 variant, running entirely on your machine — no API calls, no cost per request."
+              position="bottom"
+            >
+              CLIP ViT-B/32
+            </InfoTip>
+          </div>
           <div className="mt-1 flex items-center gap-1.5 sm:justify-end">
             <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[status]}`} />
             <span className="text-xs text-muted">{STATUS_LABEL[status]}</span>

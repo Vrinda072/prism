@@ -1,8 +1,13 @@
+import InfoTip from "./InfoTip"
+
 // An abstract representation of embedding distance — not a literal 2D
 // projection of the 512-dim space. Movement is a monotonic (sqrt-amplified,
 // so small early drift is still visible) function of the real drift value,
 // so it always honestly reflects the measured number, never a fabricated one.
 const MAX_TRAVEL_PERCENT = 82
+
+const TIP =
+  "An abstract stand-in for embedding distance — not a literal map of CLIP's 512-dimensional space. The dot's position is a monotonic function of the real drift number above (amplified so small drift stays visible), never a fabricated one."
 
 interface DriftVisualizationProps {
   drift: number | null
@@ -15,7 +20,9 @@ export default function DriftVisualization({ drift }: DriftVisualizationProps) {
 
   return (
     <div className="mt-8 border-t border-border pt-6">
-      <div className="mb-5 text-[11px] uppercase tracking-widest text-muted">Representation Distance</div>
+      <div className="mb-5 text-[11px] uppercase tracking-widest text-muted">
+        <InfoTip text={TIP}>Representation Distance</InfoTip>
+      </div>
       <div className="relative mx-[5px] h-3">
         <div className="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-border" />
         <div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2">

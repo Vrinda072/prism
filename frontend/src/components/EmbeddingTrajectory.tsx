@@ -1,10 +1,14 @@
 import { useMemo, useState } from "react"
 import type { TrajectoryPoint } from "../types/trajectory"
+import InfoTip from "./InfoTip"
 import Panel from "./Panel"
 
 const VIEW_W = 440
 const VIEW_H = 220
 const PADDING = 28
+
+const TIP =
+  "Each point is a real CLIP embedding from one of your perturbation settings, reduced from 512 dimensions down to 2 using PCA (principal component analysis) — a standard technique that finds the two directions along which your points vary the most. The axes don't mean anything on their own; only the relative positions and distances between points are meaningful."
 
 interface EmbeddingTrajectoryProps {
   points: TrajectoryPoint[]
@@ -72,7 +76,7 @@ export default function EmbeddingTrajectory({ points, projected }: EmbeddingTraj
 
   return (
     <Panel
-      label="Embedding Trajectory"
+      label={<InfoTip text={TIP}>Embedding Trajectory</InfoTip>}
       headerRight={
         <span className="text-[11px] uppercase tracking-widest text-muted">
           {points.length > 0 ? `${points.length} point${points.length === 1 ? "" : "s"}` : ""}
@@ -95,12 +99,20 @@ export default function EmbeddingTrajectory({ points, projected }: EmbeddingTraj
               aria-label={`Embedding trajectory across ${laidOut.length} perturbation state${laidOut.length === 1 ? "" : "s"}, projected into 2D via PCA`}
             >
               {pathD && (
+                // Re-keyed per point count so the line visibly draws itself
+                // from scratch each time a new perturbation state is added —
+                // pathLength normalizes the dash math regardless of the
+                // path's actual on-screen length.
                 <path
+                  key={laidOut.length}
                   d={pathD}
+                  pathLength={100}
                   fill="none"
                   stroke="var(--color-border)"
                   strokeWidth={1.5}
-                  style={{ transition: "d 500ms ease-out" }}
+                  strokeDasharray={100}
+                  strokeDashoffset={100}
+                  style={{ animation: "draw-path 600ms ease-out forwards" }}
                 />
               )}
               {laidOut.map(({ point, x, y, intensity, isLatest }) => {
@@ -116,7 +128,12 @@ export default function EmbeddingTrajectory({ points, projected }: EmbeddingTraj
                       fillOpacity={isLatest ? 1 : 0.55}
                       stroke={isShown ? "var(--color-accent)" : "transparent"}
                       strokeWidth={2}
-                      style={{ transition: "cx 500ms ease-out, cy 500ms ease-out, r 200ms ease-out" }}
+                      className="animate-[point-in_400ms_ease-out]"
+                      style={{
+                        transition: "cx 500ms ease-out, cy 500ms ease-out, r 200ms ease-out",
+                        transformBox: "fill-box",
+                        transformOrigin: "center",
+                      }}
                     />
                     <circle
                       cx={x}
