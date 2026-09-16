@@ -9,6 +9,7 @@ import {
 } from "./api/client"
 import AnalysisPanel from "./components/AnalysisPanel"
 import ControlsBar from "./components/ControlsBar"
+import DatasetBenchmark from "./components/DatasetBenchmark"
 import EmbeddingTrajectory from "./components/EmbeddingTrajectory"
 import ExperimentHistory from "./components/ExperimentHistory"
 import Hero from "./components/Hero"
@@ -296,6 +297,9 @@ function App() {
           </div>
           <div className="min-h-[280px]">
             <RobustnessSweep originalImage={originalImage} />
+          </div>
+          <div className="min-h-[280px]">
+            <DatasetBenchmark />
           </div>
         </div>
       </section>

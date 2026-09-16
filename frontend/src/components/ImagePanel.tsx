@@ -12,7 +12,7 @@ interface ImagePanelProps {
 export default function ImagePanel({ label, tip, imageUrl, emptyMessage, accentIntensity }: ImagePanelProps) {
   return (
     <Panel label={tip ? <InfoTip text={tip}>{label}</InfoTip> : label} accentIntensity={accentIntensity}>
-      <div className="flex flex-1 min-h-[360px] items-center justify-center overflow-hidden lg:min-h-[480px]">
+      <div className="flex flex-1 min-h-[360px] items-center justify-center overflow-hidden rounded-2xl lg:min-h-[480px]">
         {imageUrl ? (
           <img
             key={imageUrl}
