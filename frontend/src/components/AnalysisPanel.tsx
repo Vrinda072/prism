@@ -134,7 +134,7 @@ export default function AnalysisPanel({
                 onKeyDown={(e) => {
                   if (e.key === "Escape") setIsNaming(false)
                 }}
-                className="w-32 border border-border bg-paper px-2 py-1 text-xs text-ink outline-none focus:border-accent"
+                className="w-32 rounded-md border border-border bg-paper px-2 py-1 text-xs text-ink outline-none focus:border-accent"
               />
               <button type="submit" className="text-xs font-medium text-accent-text hover:underline">
                 Save

@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #f7f6f2;
-  --color-ink: #16150f;
-  --color-muted: #6b6659;
-  --color-border: #e2dfd3;
-  --color-panel: #fbfaf7;
-  --color-panel-raised: #ffffff;
-  --color-accent: #ff4b2b;
-  --color-accent-soft: rgb(255 75 43 / 8%);
+  --color-paper: #fbe4ea;
+  --color-ink: #2b0f1e;
+  --color-muted: #7a5866;
+  --color-border: #f0d2dc;
+  --color-panel: #fdf0f4;
+  --color-panel-raised: #fffafb;
+  --color-accent: #c23a5e;
+  --color-accent-soft: rgb(194 58 94 / 10%);
   /* Darker than --color-accent specifically for text (error messages) —
-     the brand red at full saturation fails WCAG AA (4.5:1) for text on
+     the brand rose at full saturation fails WCAG AA (4.5:1) for text on
      paper, though it's fine for the non-text uses (dots, borders). */
-  --color-accent-text: #c2321a;
-  --color-positive: #2f7a4f;
-  --color-positive-soft: rgb(47 122 79 / 10%);
+  --color-accent-text: #9c2c49;
+  --color-positive: #4f7a5e;
+  --color-positive-soft: rgb(79 122 94 / 10%);
 
   /* Elevation is expressed as a soft, low-contrast shadow — never a
      gradient or a glow. In dark mode a drop shadow reads as nothing
@@ -38,17 +38,17 @@
    runtime, so overriding them here (outside @theme) is what actually works. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-paper: #0d0c0a;
-    --color-ink: #f5f3ec;
-    --color-muted: #928d7a;
-    --color-border: #29271f;
-    --color-panel: #141310;
-    --color-panel-raised: #1a1815;
-    --color-accent: #ff6a45;
-    --color-accent-soft: rgb(255 106 69 / 10%);
-    --color-accent-text: #ff6a45; /* already passes AA against dark paper */
-    --color-positive: #4fae79;
-    --color-positive-soft: rgb(79 174 121 / 12%);
+    --color-paper: #1c0f16;
+    --color-ink: #f7e9ee;
+    --color-muted: #b08d98;
+    --color-border: #3a2028;
+    --color-panel: #241318;
+    --color-panel-raised: #2c171d;
+    --color-accent: #ff6f91;
+    --color-accent-soft: rgb(255 111 145 / 12%);
+    --color-accent-text: #ff6f91; /* already passes AA against dark paper */
+    --color-positive: #5fbf8a;
+    --color-positive-soft: rgb(95 191 138 / 12%);
 
     --shadow-panel: inset 0 1px 0 rgb(255 255 255 / 3%), 0 2px 8px rgb(0 0 0 / 35%);
     --shadow-panel-raised: inset 0 1px 0 rgb(255 255 255 / 5%), 0 6px 20px rgb(0 0 0 / 45%);
@@ -57,6 +57,21 @@
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Anchor targets need breathing room under the sticky nav (~69px tall) —
+   without this, a jump-to-section lands the heading right under it. */
+#overview,
+#how-it-works,
+#workspace,
+#numbers,
+#api,
+#limitations {
+  scroll-margin-top: 84px;
 }
 
 body {
@@ -163,6 +178,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {

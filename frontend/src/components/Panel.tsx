@@ -33,7 +33,7 @@ export default function Panel({
         {headerRight}
       </div>
       <div
-        className="flex flex-1 flex-col border border-border bg-panel transition-[border-color,box-shadow] duration-500"
+        className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-panel transition-[border-color,box-shadow] duration-500"
         style={{
           boxShadow: raised ? "var(--shadow-panel-raised)" : "var(--shadow-panel)",
           borderColor,

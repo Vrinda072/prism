@@ -54,7 +54,7 @@ export default function ImageSourceBar({ onSelect }: ImageSourceBarProps) {
               aria-label={`Use sample image: ${sample.label}`}
               aria-pressed={activeSampleId === sample.id}
               title={sample.label}
-              className={`h-10 w-10 overflow-hidden border transition ${
+              className={`h-10 w-10 overflow-hidden rounded-lg border transition ${
                 activeSampleId === sample.id ? "border-accent" : "border-border hover:border-ink"
               }`}
             >
@@ -69,7 +69,7 @@ export default function ImageSourceBar({ onSelect }: ImageSourceBarProps) {
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="border border-ink px-4 py-2 text-xs font-medium uppercase tracking-widest text-ink transition hover:bg-ink hover:text-paper"
+          className="rounded-full border border-ink px-4 py-2 text-xs font-medium uppercase tracking-widest text-ink transition hover:bg-ink hover:text-paper"
         >
           Upload Image
         </button>

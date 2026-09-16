@@ -4,9 +4,11 @@ import AnalysisPanel from "./components/AnalysisPanel"
 import ControlsBar from "./components/ControlsBar"
 import EmbeddingTrajectory from "./components/EmbeddingTrajectory"
 import ExperimentHistory from "./components/ExperimentHistory"
-import Header from "./components/Header"
+import Hero from "./components/Hero"
+import { ApiReference, HowItWorks, Limitations } from "./components/InfoSections"
 import ImagePanel from "./components/ImagePanel"
 import ImageSourceBar from "./components/ImageSourceBar"
+import NavBar from "./components/NavBar"
 import { useDebouncedValue } from "./hooks/useDebouncedValue"
 import { applyTransform, loadImageElement } from "./lib/imageTransform"
 import { summarizeTransform } from "./lib/transformSummary"
@@ -187,54 +189,67 @@ function App() {
 
   return (
     <div className="flex min-h-screen flex-col bg-paper text-ink">
-      <Header />
-      <ImageSourceBar onSelect={setOriginalImage} />
+      <NavBar />
+      <Hero />
+      <HowItWorks />
 
-      <main className="mx-auto grid w-full max-w-[1400px] flex-1 grid-cols-1 lg:grid-cols-[1fr_1fr_340px]">
-        <section className="border-b border-border p-8 lg:border-b-0 lg:border-r">
-          <ImagePanel
-            label="Original"
-            tip="The untouched source image, exactly as chosen or uploaded — CLIP's understanding of this image is the fixed baseline every perturbation is measured against."
-            imageUrl={originalImage?.url ?? null}
-            emptyMessage="Choose an image to begin."
-          />
-        </section>
+      <section id="workspace" className="border-t border-border">
+        <ImageSourceBar onSelect={setOriginalImage} />
 
-        <section className="border-b border-border p-8 lg:border-b-0 lg:border-r">
-          <ImagePanel
-            label="Live Transformation"
-            tip="The original image with the sliders' distortions applied to real pixels, rendered live as you drag. The border tints toward red as representation drift increases — a visual echo of the number below."
-            imageUrl={transformedImage?.url ?? null}
-            emptyMessage="Your transformed image will appear here."
-            accentIntensity={analysis?.drift}
-          />
-        </section>
+        <main className="mx-auto grid w-full max-w-[1400px] grid-cols-1 lg:grid-cols-[280px_1fr_320px]">
+          {/* Perturbation controls sit to the left of the images they alter —
+              cause on the left, effect in the center, reading in the same
+              direction as the eye naturally moves. */}
+          <section className="border-b border-border p-8 lg:border-b-0 lg:border-r">
+            <ControlsBar transform={transform} onChange={setTransform} disabled={!originalImage} />
+          </section>
 
-        {/* Perturbation controls sit directly beside the image they alter,
-            with the resulting analysis right below — the whole cause-and-
-            effect loop in one glance, instead of controls in a separate
-            bottom bar far from the image they're changing. */}
-        <section className="flex flex-col gap-8 p-8">
-          <ControlsBar transform={transform} onChange={setTransform} disabled={!originalImage} />
-          <AnalysisPanel
-            hasImage={!!originalImage}
-            isAnalyzing={isAnalyzing}
-            result={analysis}
-            error={analysisError}
-            suggestedName={summarizeTransform(transform)}
-            onSaveExperiment={saveExperiment}
-          />
-        </section>
-      </main>
+          <section className="flex flex-col gap-6 border-b border-border p-8 sm:flex-row lg:border-b-0 lg:border-r">
+            <div className="min-w-0 flex-1">
+              <ImagePanel
+                label="Original"
+                tip="The untouched source image, exactly as chosen or uploaded — CLIP's understanding of this image is the fixed baseline every perturbation is measured against."
+                imageUrl={originalImage?.url ?? null}
+                emptyMessage="Choose an image to begin."
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <ImagePanel
+                label="Live Transformation"
+                tip="The original image with the sliders' distortions applied to real pixels, rendered live as you drag. The border tints toward red as representation drift increases — a visual echo of the number below."
+                imageUrl={transformedImage?.url ?? null}
+                emptyMessage="Your transformed image will appear here."
+                accentIntensity={analysis?.drift}
+              />
+            </div>
+          </section>
 
-      <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-8 border-t border-border p-8 lg:grid-cols-3">
-        <div className="min-h-[320px] lg:col-span-2">
-          <EmbeddingTrajectory points={trajectory} projected={projectedPoints} />
+          <section className="p-8">
+            <AnalysisPanel
+              hasImage={!!originalImage}
+              isAnalyzing={isAnalyzing}
+              result={analysis}
+              error={analysisError}
+              suggestedName={summarizeTransform(transform)}
+              onSaveExperiment={saveExperiment}
+            />
+          </section>
+        </main>
+      </section>
+
+      <section id="numbers" className="border-t border-border px-8 py-16">
+        <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-8 lg:grid-cols-3">
+          <div className="min-h-[320px] lg:col-span-2">
+            <EmbeddingTrajectory points={trajectory} projected={projectedPoints} />
+          </div>
+          <div className="min-h-[320px]">
+            <ExperimentHistory experiments={experiments} onRestore={restoreExperiment} />
+          </div>
         </div>
-        <div className="min-h-[320px]">
-          <ExperimentHistory experiments={experiments} onRestore={restoreExperiment} />
-        </div>
-      </div>
+      </section>
+
+      <ApiReference />
+      <Limitations />
     </div>
   )
 }
