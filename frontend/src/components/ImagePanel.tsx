@@ -4,17 +4,12 @@ interface ImagePanelProps {
   label: string
   imageUrl: string | null
   emptyMessage: string
-  large?: boolean
 }
 
-export default function ImagePanel({ label, imageUrl, emptyMessage, large = false }: ImagePanelProps) {
+export default function ImagePanel({ label, imageUrl, emptyMessage }: ImagePanelProps) {
   return (
     <Panel label={label}>
-      <div
-        className={`flex flex-1 items-center justify-center overflow-hidden ${
-          large ? "min-h-[360px] lg:min-h-[480px]" : "min-h-[220px] lg:min-h-[280px]"
-        }`}
-      >
+      <div className="flex flex-1 min-h-[360px] items-center justify-center overflow-hidden lg:min-h-[480px]">
         {imageUrl ? (
           <img
             key={imageUrl}

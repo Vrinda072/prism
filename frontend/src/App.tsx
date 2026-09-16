@@ -190,7 +190,7 @@ function App() {
       <Header />
       <ImageSourceBar onSelect={setOriginalImage} />
 
-      <main className="mx-auto grid w-full max-w-[1400px] flex-1 grid-cols-1 lg:grid-cols-[300px_1fr_320px]">
+      <main className="mx-auto grid w-full max-w-[1400px] flex-1 grid-cols-1 lg:grid-cols-[1fr_1fr_340px]">
         <section className="border-b border-border p-8 lg:border-b-0 lg:border-r">
           <ImagePanel label="Original" imageUrl={originalImage?.url ?? null} emptyMessage="Choose an image to begin." />
         </section>
@@ -200,11 +200,15 @@ function App() {
             label="Live Transformation"
             imageUrl={transformedImage?.url ?? null}
             emptyMessage="Your transformed image will appear here."
-            large
           />
         </section>
 
-        <section className="p-8">
+        {/* Perturbation controls sit directly beside the image they alter,
+            with the resulting analysis right below — the whole cause-and-
+            effect loop in one glance, instead of controls in a separate
+            bottom bar far from the image they're changing. */}
+        <section className="flex flex-col gap-8 p-8">
+          <ControlsBar transform={transform} onChange={setTransform} disabled={!originalImage} />
           <AnalysisPanel
             hasImage={!!originalImage}
             isAnalyzing={isAnalyzing}
@@ -224,8 +228,6 @@ function App() {
           <ExperimentHistory experiments={experiments} onRestore={restoreExperiment} />
         </div>
       </div>
-
-      <ControlsBar transform={transform} onChange={setTransform} disabled={!originalImage} />
     </div>
   )
 }
