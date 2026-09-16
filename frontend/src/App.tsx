@@ -16,6 +16,7 @@ import { ApiReference, HowItWorks, Limitations } from "./components/InfoSections
 import ImagePanel from "./components/ImagePanel"
 import ImageSourceBar from "./components/ImageSourceBar"
 import NavBar from "./components/NavBar"
+import RobustnessSweep from "./components/RobustnessSweep"
 import SemanticAnalysis from "./components/SemanticAnalysis"
 import { useDebouncedValue } from "./hooks/useDebouncedValue"
 import { applyTransform, loadImageElement } from "./lib/imageTransform"
@@ -288,6 +289,9 @@ function App() {
           </div>
           <div className="min-h-[220px]">
             <SemanticAnalysis original={originalSemantic} transformed={transformedSemantic} />
+          </div>
+          <div className="min-h-[280px]">
+            <RobustnessSweep originalImage={originalImage} />
           </div>
         </div>
       </section>
