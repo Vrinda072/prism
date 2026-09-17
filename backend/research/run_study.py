@@ -1,23 +1,27 @@
 """Fine-vs-coarse-grained corruption robustness study on Oxford-IIIT Pet.
 
-Research question: as blur severity increases, does CLIP's zero-shot
+Research question: as corruption severity increases, does CLIP's zero-shot
 classifier confuse fine-grained distinctions (breed vs. breed) before it
 confuses coarse-grained ones (cat vs. dog) -- or do both collapse together?
+Run once with --axis blur and once with --axis noise to see whether the
+pattern found for blur is specific to that corruption or holds generally.
 
 Reuses PRISM's actual inference stack (ModelService, embedding_service,
 semantic_service's prompt-ensembling) by importing it directly, so this
 offline study uses the exact same methodology the live app does, just with
 real ground-truth labels and dataset scale.
 
-Usage: python research/run_study.py
+Usage: python research/run_study.py [--axis blur|noise]
 Requires: python research/sample_dataset.py has already been run.
 """
 
+import argparse
 import csv
 import os
 import sys
 import time
 
+import numpy as np
 import torch
 from PIL import Image, ImageFilter
 
@@ -28,10 +32,11 @@ from app.services.model_service import ModelService  # noqa: E402
 
 RESEARCH_DIR = os.path.dirname(__file__)
 MANIFEST_PATH = os.path.join(RESEARCH_DIR, "data", "manifest.csv")
-RESULTS_PATH = os.path.join(RESEARCH_DIR, "results", "pet_robustness.csv")
 
 SEVERITIES = [i / 10 for i in range(11)]
 MAX_BLUR_PX = 20  # mirrors frontend/src/lib/imageTransform.ts's TRANSFORM_CONFIG.maxBlurPx
+MAX_NOISE_STD_DEV = 45  # mirrors the same file's TRANSFORM_CONFIG.maxNoiseStdDev
+NOISE_SEED = 42  # fixed so the study itself is reproducible run to run
 
 BREED_NAMES = [
     "abyssinian", "american_bulldog", "american_pit_bull_terrier", "basset_hound", "beagle",
@@ -54,6 +59,25 @@ def apply_blur(image: Image.Image, severity: float) -> Image.Image:
     return image.filter(ImageFilter.GaussianBlur(radius=severity * MAX_BLUR_PX))
 
 
+def apply_noise(image: Image.Image, severity: float, rng: np.random.Generator) -> Image.Image:
+    """Per-pixel Gaussian noise, same parameterization as the live app's
+    canvas noise pass -- std dev = severity * maxNoiseStdDev, added to each
+    RGB channel independently and clipped back to [0, 255]."""
+    if severity <= 0:
+        return image
+    arr = np.asarray(image, dtype=np.float32)
+    noise = rng.normal(0, severity * MAX_NOISE_STD_DEV, arr.shape)
+    return Image.fromarray(np.clip(arr + noise, 0, 255).astype(np.uint8))
+
+
+def apply_corruption(axis: str, image: Image.Image, severity: float, rng: np.random.Generator) -> Image.Image:
+    if axis == "blur":
+        return apply_blur(image, severity)
+    if axis == "noise":
+        return apply_noise(image, severity, rng)
+    raise ValueError(f"Unknown axis: {axis}")
+
+
 def classify(text_embeddings: torch.Tensor, image_embedding: torch.Tensor, logit_scale: torch.Tensor) -> int:
     logits = logit_scale * text_embeddings @ image_embedding
     return int(torch.argmax(logits).item())
@@ -64,17 +88,28 @@ def load_manifest() -> list[dict]:
         return list(csv.DictReader(f))
 
 
-def load_done_keys() -> set[tuple[str, str]]:
-    if not os.path.exists(RESULTS_PATH):
+def load_done_keys(results_path: str) -> set[tuple[str, str]]:
+    if not os.path.exists(results_path):
         return set()
-    with open(RESULTS_PATH) as f:
+    with open(results_path) as f:
         return {(row["image_id"], row["severity"]) for row in csv.DictReader(f)}
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--axis", choices=["blur", "noise"], default="blur")
+    args = parser.parse_args()
+    axis = args.axis
+
+    # blur kept its original filename (already-committed results); noise
+    # (and any future axis) gets its own file rather than mixing rows from
+    # different corruptions into one CSV.
+    results_path = os.path.join(RESEARCH_DIR, "results", "pet_robustness.csv" if axis == "blur" else f"pet_robustness_{axis}.csv")
+    rng = np.random.default_rng(NOISE_SEED)
+
     manifest = load_manifest()
-    done = load_done_keys()
-    print(f"{len(manifest)} images in manifest, {len(done)} (image, severity) rows already done")
+    done = load_done_keys(results_path)
+    print(f"axis={axis} | {len(manifest)} images in manifest, {len(done)} (image, severity) rows already done")
 
     model_service = ModelService()
     print("Loading CLIP ViT-B/32...")
@@ -89,12 +124,12 @@ def main() -> None:
         [semantic_service.get_ensembled_text_embedding(model_service, c) for c in COARSE_NAMES]
     )
 
-    is_new_file = not os.path.exists(RESULTS_PATH)
+    is_new_file = not os.path.exists(results_path)
     fieldnames = [
         "image_id", "breed", "coarse", "severity", "drift",
         "fine_pred", "fine_correct", "coarse_pred", "coarse_correct", "error_type",
     ]
-    out = open(RESULTS_PATH, "a", newline="")
+    out = open(results_path, "a", newline="")
     writer = csv.DictWriter(out, fieldnames=fieldnames)
     if is_new_file:
         writer.writeheader()
@@ -120,7 +155,7 @@ def main() -> None:
             if key in done:
                 continue
 
-            transformed = apply_blur(image, severity)
+            transformed = apply_corruption(axis, image, severity, rng)
             with torch.no_grad():
                 img_embedding = embedding_service.get_embedding(model_service, transformed)
 
@@ -161,7 +196,7 @@ def main() -> None:
             print(f"  {i + 1}/{len(manifest)} images | {n_done_this_run} rows this run | ~{remaining / 60:.1f} min left")
 
     out.close()
-    print(f"Done. {n_done_this_run} new rows written -> {RESULTS_PATH}")
+    print(f"Done. {n_done_this_run} new rows written -> {results_path}")
 
 
 if __name__ == "__main__":
