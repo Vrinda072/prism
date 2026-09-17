@@ -12,8 +12,7 @@ import ControlsBar from "./components/ControlsBar"
 import DatasetBenchmark from "./components/DatasetBenchmark"
 import EmbeddingTrajectory from "./components/EmbeddingTrajectory"
 import ExperimentHistory from "./components/ExperimentHistory"
-import Hero from "./components/Hero"
-import { ApiReference, HowItWorks } from "./components/InfoSections"
+import { HowItWorks } from "./components/InfoSections"
 import { ResearchFindings } from "./components/ResearchFindings"
 import ImagePanel from "./components/ImagePanel"
 import ImageSourceBar from "./components/ImageSourceBar"
@@ -236,7 +235,6 @@ function App() {
   return (
     <div className="flex min-h-screen flex-col bg-paper text-ink">
       <NavBar />
-      <Hero />
       <HowItWorks />
 
       <section id="workspace" className="border-t border-border">
@@ -306,7 +304,6 @@ function App() {
       </section>
 
       <ResearchFindings />
-      <ApiReference />
     </div>
   )
 }

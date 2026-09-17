@@ -66,12 +66,10 @@ html {
 
 /* Anchor targets need breathing room under the sticky nav (~69px tall) —
    without this, a jump-to-section lands the heading right under it. */
-#overview,
 #how-it-works,
 #workspace,
 #numbers,
-#findings,
-#api {
+#findings {
   scroll-margin-top: 84px;
 }
 

@@ -2,7 +2,7 @@ const STEPS = [
   {
     n: "01",
     title: "Perturb",
-    body: "Drag a slider — blur, noise, brightness, rotation, or JPEG compression — applied to real pixels on a canvas, not a CSS filter approximation.",
+    body: "Drag a slider — blur, noise, brightness, contrast, rotation, or JPEG compression — applied to real pixels on a canvas, not a CSS filter approximation.",
   },
   {
     n: "02",
@@ -36,55 +36,6 @@ export function HowItWorks() {
               <span className="font-mono text-sm text-accent-text">{step.n}</span>
               <h3 className="mt-2 font-heading text-lg font-semibold text-ink">{step.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">{step.body}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-interface Endpoint {
-  method: string
-  path: string
-  description: string
-}
-
-const ENDPOINTS: Endpoint[] = [
-  { method: "GET", path: "/health", description: "Model load state and inference device (cpu/mps/cuda)." },
-  { method: "POST", path: "/analyze", description: "One image in, its 512-d CLIP embedding out." },
-  {
-    method: "POST",
-    path: "/compare",
-    description: "Two images in, cosine similarity, drift, and both embeddings out.",
-  },
-  {
-    method: "POST",
-    path: "/project",
-    description: "A set of embeddings in, PCA-projected 2D points out (sign-stabilized across calls).",
-  },
-  {
-    method: "POST",
-    path: "/semantic",
-    description: "One image in, CLIP zero-shot scores against a fixed 6-concept set, plus confidence and entropy.",
-  },
-]
-
-export function ApiReference() {
-  return (
-    <section id="api" className="border-t border-border px-8 py-20">
-      <div className="mx-auto max-w-3xl">
-        <h2 className="font-heading text-3xl font-bold text-ink">API</h2>
-        <p className="mt-3 text-muted">The actual routes this app calls — nothing here is illustrative.</p>
-        <div className="mt-10 flex flex-col gap-1">
-          {ENDPOINTS.map((endpoint) => (
-            <div
-              key={endpoint.path}
-              className="flex flex-col gap-1 rounded-2xl border border-border bg-panel px-5 py-4 sm:flex-row sm:items-baseline sm:gap-4"
-            >
-              <span className="shrink-0 font-mono text-xs font-medium text-accent-text">{endpoint.method}</span>
-              <span className="shrink-0 font-mono text-sm text-ink">{endpoint.path}</span>
-              <span className="text-sm text-muted">{endpoint.description}</span>
             </div>
           ))}
         </div>
