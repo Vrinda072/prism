@@ -11,11 +11,9 @@ from app.services.model_service import ModelService
 # resulting scores honest rather than an open-ended classifier.
 CONCEPTS = ["flower", "animal", "vehicle", "person", "building", "food"]
 
-# Prompt ensembling, per the CLIP Robustness Study reference (Eishaan-Khatri/
-# IACV_CLIP_Robustness_Study): a single bare template is more sensitive to
-# incidental prompt wording than an average over several. Each concept's text
-# embedding is the mean of these 8 templates, renormalized — not just the
-# first template's embedding.
+# A single bare template is more sensitive to incidental prompt wording than
+# an average over several. Each concept's text embedding is the mean of
+# these 8 templates, renormalized — not just the first template's embedding.
 PROMPT_TEMPLATES = [
     "a photo of a {}.",
     "a blurry photo of a {}.",

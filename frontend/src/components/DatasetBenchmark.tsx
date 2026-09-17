@@ -6,7 +6,7 @@ import InfoTip from "./InfoTip"
 import Panel from "./Panel"
 
 const PANEL_TIP =
-  "The CLIP Robustness Study reference evaluates many images per corruption, not one — because a single image's curve can be an outlier. This runs the same severity sweep across every image in your set and pools the results, the same way that study pools results across its dataset."
+  "One image's curve can be an outlier. This runs the same severity sweep across every image in your set and pools the results, so you can see whether a single photo was typical or not."
 
 const AXIS_LABELS: Record<keyof TransformState, string> = {
   blur: "Blur",

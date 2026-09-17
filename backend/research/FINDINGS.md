@@ -1,8 +1,7 @@
 # Fine-vs-coarse-grained corruption robustness
 
-This is a real offline experiment, not a live-compute panel like the rest of PRISM, structured like the
-reference CLIP Robustness Study's own scripts, but asking a question that study never tests. Its label
-sets (CIFAR-10, CIFAR-100) are single-level, and its EuroSAT run has no severity sweep at all.
+This is a real offline experiment, not a live-compute panel like the rest of PRISM: a script that runs
+a full sweep over a labeled dataset once and produces a results CSV and a written finding.
 
 ## The question
 

@@ -12,7 +12,7 @@ const PANEL_TIP =
   "A controlled experiment, one perturbation type at a time, at 11 fixed severities (0-100%) — each point is a real CLIP forward pass. This is the same methodology robustness studies use to compare how different corruptions affect a model."
 
 const CORRELATION_TIP =
-  "Spearman correlation between this sweep's embedding drift and its semantic uncertainty (1 − confidence). The reference CLIP robustness study found this relationship strongly predicts where a model's accuracy actually collapses — a positive value here means the same pattern held for this image."
+  "Spearman correlation between this sweep's embedding drift and its semantic uncertainty (1 − confidence). A positive value means the two move together for this image: as the embedding drifts further from the original, the model also gets less sure what it's looking at."
 
 const AXIS_LABELS: Record<keyof TransformState, string> = {
   blur: "Blur",

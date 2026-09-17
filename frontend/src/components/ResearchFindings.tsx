@@ -3,7 +3,7 @@ import { PET_STUDY_AXES, PET_STUDY_META } from "../data/petStudyResults"
 import InfoTip from "./InfoTip"
 
 const QUESTION_TIP =
-  "The reference CLIP robustness study never tests this: CIFAR-10/100 are single-level label sets, and its EuroSAT run has no severity sweep at all. This fills that gap with a real offline experiment, not a live-compute panel like the rest of the site."
+  "A real offline experiment, not a live-compute panel like the rest of the site: a script that runs a full severity sweep over a labeled dataset once and reports the actual result."
 
 const AXIS_LABELS: Record<string, string> = { blur: "Blur", noise: "Noise" }
 

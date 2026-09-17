@@ -102,11 +102,9 @@ changes: 40 rapid slider ticks in a row collapse into exactly one network reques
 
 ## Research: does CLIP confuse breeds before it confuses species?
 
-Everything above is live and interactive. This section is a real offline batch experiment, structured
-like the [CLIP Robustness Study](https://github.com/Eishaan-Khatri/IACV_CLIP_Robustness_Study)
-reference project's own scripts, producing a results CSV and a written finding. It asks a question that
-project's own setup cannot answer: its label sets (CIFAR-10, CIFAR-100) are single-level, and its
-EuroSAT run has no severity sweep at all. The full write-up, raw per-image CSVs, and every script
+Everything above is live and interactive. This section is a real offline batch experiment: a script that
+runs a full sweep over a labeled dataset and produces a results CSV and a written finding, rather than
+a panel that recomputes on every interaction. The full write-up, raw per-image CSVs, and every script
 needed to reproduce this live in [`backend/research/`](backend/research/).
 
 ### The question
