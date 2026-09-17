@@ -24,5 +24,10 @@ huggingface_cache/
 # Temp uploaded images
 backend/app/tmp_uploads/
 
+# Research script source images — sampled from Oxford-IIIT Pet at run time,
+# not app code. manifest.csv (which image, which label) stays tracked for
+# reproducibility/attribution; the actual jpgs don't.
+backend/research/data/oxford_pets/
+
 # Local tooling state
 .claude/

@@ -2,6 +2,7 @@ const NAV_LINKS = [
   { href: "#overview", label: "Overview" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#numbers", label: "Numbers" },
+  { href: "#findings", label: "Findings" },
   { href: "#api", label: "API" },
 ]
 
