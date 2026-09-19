@@ -2,7 +2,7 @@ const STEPS = [
   {
     n: "01",
     title: "Perturb",
-    body: "Drag a slider — blur, noise, brightness, contrast, rotation, or JPEG compression — applied to real pixels on a canvas, not a CSS filter approximation.",
+    body: "Pick one corruption — blur, noise, brightness, contrast, rotation, or JPEG compression — and move the severity slider. Every step is applied to real pixels on a canvas, not a CSS filter approximation.",
   },
   {
     n: "02",
