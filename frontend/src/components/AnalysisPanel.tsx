@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react"
-import type { CompareResponse } from "../api/client"
 import { useAnimatedNumber } from "../hooks/useAnimatedNumber"
+import type { ExperimentStep } from "../types/experiment"
 import DriftVisualization from "./DriftVisualization"
 import InfoTip from "./InfoTip"
 import Panel from "./Panel"
@@ -74,7 +74,7 @@ function Metric({ label, tip, value, rawValue, first = false, staggerMs, deltaUn
 interface AnalysisPanelProps {
   hasImage: boolean
   isAnalyzing: boolean
-  result: CompareResponse | null
+  step: ExperimentStep | null
   error: string | null
   suggestedName: string
   onSaveExperiment: (name: string) => void
@@ -83,14 +83,14 @@ interface AnalysisPanelProps {
 export default function AnalysisPanel({
   hasImage,
   isAnalyzing,
-  result,
+  step,
   error,
   suggestedName,
   onSaveExperiment,
 }: AnalysisPanelProps) {
-  const similarityRaw = result ? result.similarity * 100 : null
-  const driftRaw = result ? result.drift * 100 : null
-  const latencyRaw = result ? result.latency_ms : null
+  const similarityRaw = step ? step.similarity * 100 : null
+  const driftRaw = step ? step.drift * 100 : null
+  const latencyRaw = step ? step.latencyMs : null
 
   const animatedSimilarity = useAnimatedNumber(similarityRaw)
   const animatedDrift = useAnimatedNumber(driftRaw)
@@ -102,7 +102,7 @@ export default function AnalysisPanel({
 
   const [isNaming, setIsNaming] = useState(false)
   const [nameDraft, setNameDraft] = useState("")
-  const canSave = !!result && !isAnalyzing
+  const canSave = !!step && !isAnalyzing
 
   const startNaming = () => {
     setNameDraft(suggestedName)
@@ -195,10 +195,10 @@ export default function AnalysisPanel({
           />
         </div>
 
-        {hasImage && <DriftVisualization drift={result?.drift ?? null} />}
+        {hasImage && <DriftVisualization drift={step?.drift ?? null} />}
 
         {!hasImage && <p className="mt-6 text-sm text-muted">Choose an image to begin.</p>}
-        {hasImage && isAnalyzing && <p className="mt-6 text-sm text-muted">Analyzing...</p>}
+        {hasImage && isAnalyzing && <p className="mt-6 text-sm text-muted">Running severity sweep...</p>}
         {hasImage && !isAnalyzing && error && <p className="mt-6 text-sm text-accent-text">{error}</p>}
       </div>
     </Panel>

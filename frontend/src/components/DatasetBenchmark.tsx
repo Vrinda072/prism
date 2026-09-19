@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react"
 import { useDatasetBenchmark } from "../hooks/useDatasetBenchmark"
+import { AXIS_LABELS } from "../lib/axisLabels"
 import { spearmanCorrelation } from "../lib/statistics"
 import type { TransformState } from "../types/transform"
 import InfoTip from "./InfoTip"
@@ -7,15 +8,6 @@ import Panel from "./Panel"
 
 const PANEL_TIP =
   "One image's curve can be an outlier. This runs the same severity sweep across every image in your set and pools the results, so you can see whether a single photo was typical or not."
-
-const AXIS_LABELS: Record<keyof TransformState, string> = {
-  blur: "Blur",
-  noise: "Noise",
-  brightness: "Brightness",
-  contrast: "Contrast",
-  rotation: "Rotation",
-  compression: "Compression",
-}
 
 const SERIES_COLORS = ["#7a2331", "#2c3e50", "#b8860b", "#5f7a5f", "#6b4570", "#a0522d"]
 

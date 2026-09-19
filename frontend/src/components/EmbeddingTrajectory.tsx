@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import type { TrajectoryPoint } from "../types/trajectory"
+import type { ExperimentStep } from "../types/experiment"
 import InfoTip from "./InfoTip"
 import Panel from "./Panel"
 
@@ -8,34 +8,30 @@ const VIEW_H = 220
 const PADDING = 28
 
 const TIP =
-  "Each point is a real CLIP embedding from one of your perturbation settings, reduced from 512 dimensions down to 2 using PCA (principal component analysis) — a standard technique that finds the two directions along which your points vary the most. The axes don't mean anything on their own; only the relative positions and distances between points are meaningful."
+  "Each point is a real CLIP embedding from one tested severity, reduced from 512 dimensions down to 2 using PCA (principal component analysis) — the two directions along which this sweep's points vary the most. The axes don't mean anything on their own; only the relative positions and distances between points are meaningful. Click a point to make it the active severity everywhere on the page."
 
 interface EmbeddingTrajectoryProps {
-  points: TrajectoryPoint[]
-  projected: [number, number][] | null
+  steps: ExperimentStep[]
+  activeSeverity: number
+  onSelectSeverity: (severity: number) => void
 }
 
-interface LaidOutPoint {
-  point: TrajectoryPoint
+interface LaidOutStep {
+  step: ExperimentStep
   x: number
   y: number
-  intensity: number
-  isLatest: boolean
-}
-
-function meanIntensity(t: TrajectoryPoint["transform"]): number {
-  return (t.blur + t.noise + t.brightness + t.rotation + t.compression) / 5
 }
 
 // Centers the projected coordinates and scales both axes UNIFORMLY (never
 // independently) — PCA distances are only honest to look at when x and y
 // share one scale; stretching one axis more than the other would visually
 // exaggerate or hide real embedding distance.
-function layoutPoints(points: TrajectoryPoint[], projected: [number, number][]): LaidOutPoint[] {
-  if (points.length === 0) return []
+function layoutSteps(steps: ExperimentStep[]): LaidOutStep[] {
+  const projected = steps.filter((s): s is ExperimentStep & { projected: [number, number] } => s.projected !== null)
+  if (projected.length === 0) return []
 
-  const xs = projected.map((p) => p[0])
-  const ys = projected.map((p) => p[1])
+  const xs = projected.map((s) => s.projected[0])
+  const ys = projected.map((s) => s.projected[1])
   const minX = Math.min(...xs)
   const maxX = Math.max(...xs)
   const minY = Math.min(...ys)
@@ -48,29 +44,19 @@ function layoutPoints(points: TrajectoryPoint[], projected: [number, number][]):
   const usableH = VIEW_H - PADDING * 2
   const scale = Math.min(usableW, usableH) / range
 
-  return points.map((point, i) => {
-    const [px, py] = projected[i]
-    return {
-      point,
-      x: VIEW_W / 2 + (px - midX) * scale,
-      y: VIEW_H / 2 - (py - midY) * scale, // flip Y: PCA "up" reads as up
-      intensity: meanIntensity(point.transform),
-      isLatest: i === points.length - 1,
-    }
-  })
+  return projected.map((step) => ({
+    step,
+    x: VIEW_W / 2 + (step.projected[0] - midX) * scale,
+    y: VIEW_H / 2 - (step.projected[1] - midY) * scale, // flip Y: PCA "up" reads as up
+  }))
 }
 
-export default function EmbeddingTrajectory({ points, projected }: EmbeddingTrajectoryProps) {
-  const [activeId, setActiveId] = useState<string | null>(null)
-  const [pinnedId, setPinnedId] = useState<string | null>(null)
+export default function EmbeddingTrajectory({ steps, activeSeverity, onSelectSeverity }: EmbeddingTrajectoryProps) {
+  const [hoveredSeverity, setHoveredSeverity] = useState<number | null>(null)
 
-  const laidOut = useMemo(() => {
-    if (!projected || projected.length !== points.length) return []
-    return layoutPoints(points, projected)
-  }, [points, projected])
-
-  const shownId = pinnedId ?? activeId
-  const shown = laidOut.find((p) => p.point.id === shownId) ?? null
+  const laidOut = useMemo(() => layoutSteps(steps), [steps])
+  const shownSeverity = hoveredSeverity ?? activeSeverity
+  const shown = laidOut.find((p) => p.step.severity === shownSeverity) ?? null
 
   const pathD = laidOut.length > 1 ? `M ${laidOut.map((p) => `${p.x},${p.y}`).join(" L ")}` : ""
 
@@ -79,7 +65,7 @@ export default function EmbeddingTrajectory({ points, projected }: EmbeddingTraj
       label={<InfoTip text={TIP}>Embedding Trajectory</InfoTip>}
       headerRight={
         <span className="text-[11px] uppercase tracking-widest text-muted">
-          {points.length > 0 ? `${points.length} point${points.length === 1 ? "" : "s"}` : ""}
+          {laidOut.length > 0 ? `${laidOut.length} point${laidOut.length === 1 ? "" : "s"}` : ""}
         </span>
       }
     >
@@ -87,7 +73,7 @@ export default function EmbeddingTrajectory({ points, projected }: EmbeddingTraj
         {laidOut.length === 0 ? (
           <div className="flex flex-1 items-center justify-center">
             <p className="max-w-[16rem] text-center text-sm text-muted">
-              Trajectory will appear here as you adjust perturbations.
+              The trajectory for this severity sweep will appear here once it finishes running.
             </p>
           </div>
         ) : (
@@ -96,13 +82,9 @@ export default function EmbeddingTrajectory({ points, projected }: EmbeddingTraj
               viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
               className="h-full w-full"
               role="img"
-              aria-label={`Embedding trajectory across ${laidOut.length} perturbation state${laidOut.length === 1 ? "" : "s"}, projected into 2D via PCA`}
+              aria-label={`Embedding trajectory across ${laidOut.length} severities, projected into 2D via PCA`}
             >
               {pathD && (
-                // Re-keyed per point count so the line visibly draws itself
-                // from scratch each time a new perturbation state is added —
-                // pathLength normalizes the dash math regardless of the
-                // path's actual on-screen length.
                 <path
                   key={laidOut.length}
                   d={pathD}
@@ -115,22 +97,23 @@ export default function EmbeddingTrajectory({ points, projected }: EmbeddingTraj
                   style={{ animation: "draw-path 600ms ease-out forwards" }}
                 />
               )}
-              {laidOut.map(({ point, x, y, intensity, isLatest }) => {
-                const isShown = shownId === point.id
-                const radius = isLatest ? 6 : 4
+              {laidOut.map(({ step, x, y }) => {
+                const isActive = step.severity === activeSeverity
+                const isShown = step.severity === shownSeverity
+                const radius = isActive ? 6 : 4
                 return (
-                  <g key={point.id}>
+                  <g key={step.severity}>
                     <circle
                       cx={x}
                       cy={y}
                       r={isShown ? radius + 3 : radius}
-                      fill={isLatest ? "var(--color-accent)" : "var(--color-ink)"}
-                      fillOpacity={isLatest ? 1 : 0.55}
+                      fill={isActive ? "var(--color-accent)" : "var(--color-ink)"}
+                      fillOpacity={isActive ? 1 : 0.4 + step.severity * 0.5}
                       stroke={isShown ? "var(--color-accent)" : "transparent"}
                       strokeWidth={2}
                       className="animate-[point-in_400ms_ease-out]"
                       style={{
-                        transition: "cx 500ms ease-out, cy 500ms ease-out, r 200ms ease-out",
+                        transition: "r 200ms ease-out",
                         transformBox: "fill-box",
                         transformOrigin: "center",
                       }}
@@ -142,18 +125,17 @@ export default function EmbeddingTrajectory({ points, projected }: EmbeddingTraj
                       fill="transparent"
                       tabIndex={0}
                       role="button"
-                      aria-label={`Perturbation intensity ${Math.round(intensity * 100)}%, similarity ${(point.similarity * 100).toFixed(1)}%, drift ${(point.drift * 100).toFixed(1)}%`}
+                      aria-label={`Severity ${Math.round(step.severity * 100)}%, similarity ${(step.similarity * 100).toFixed(1)}%, drift ${(step.drift * 100).toFixed(1)}%, predicted ${step.topConcept}`}
                       className="cursor-pointer outline-none"
-                      style={{ transition: "cx 500ms ease-out, cy 500ms ease-out" }}
-                      onMouseEnter={() => setActiveId(point.id)}
-                      onMouseLeave={() => setActiveId(null)}
-                      onFocus={() => setActiveId(point.id)}
-                      onBlur={() => setActiveId(null)}
-                      onClick={() => setPinnedId((prev) => (prev === point.id ? null : point.id))}
+                      onMouseEnter={() => setHoveredSeverity(step.severity)}
+                      onMouseLeave={() => setHoveredSeverity(null)}
+                      onFocus={() => setHoveredSeverity(step.severity)}
+                      onBlur={() => setHoveredSeverity(null)}
+                      onClick={() => onSelectSeverity(step.severity)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault()
-                          setPinnedId((prev) => (prev === point.id ? null : point.id))
+                          onSelectSeverity(step.severity)
                         }
                       }}
                     />
@@ -164,28 +146,33 @@ export default function EmbeddingTrajectory({ points, projected }: EmbeddingTraj
 
             {shown && (
               <div
-                className="pointer-events-none absolute z-10 w-40 border border-border bg-panel-raised p-2.5 text-xs"
+                className="pointer-events-none absolute z-10 w-44 border border-border bg-panel-raised p-2.5 text-xs"
                 style={{
                   boxShadow: "var(--shadow-panel-raised)",
-                  // Position via percentages of the container (matching how the
-                  // SVG's viewBox scales), never raw viewBox units as pixels —
-                  // those two coordinate spaces only match by coincidence.
                   left: `${(shown.x / VIEW_W) * 100}%`,
                   top: `${(shown.y / VIEW_H) * 100}%`,
                   transform: `translate(-50%, ${shown.y > VIEW_H / 2 ? "calc(-100% - 14px)" : "14px"})`,
                 }}
               >
                 <div className="flex justify-between text-muted">
-                  <span>Intensity</span>
-                  <span className="font-mono text-ink">{Math.round(shown.intensity * 100)}%</span>
+                  <span>Severity</span>
+                  <span className="font-mono text-ink">{Math.round(shown.step.severity * 100)}%</span>
                 </div>
                 <div className="mt-1 flex justify-between text-muted">
                   <span>Similarity</span>
-                  <span className="font-mono text-ink">{(shown.point.similarity * 100).toFixed(1)}%</span>
+                  <span className="font-mono text-ink">{(shown.step.similarity * 100).toFixed(1)}%</span>
                 </div>
                 <div className="mt-1 flex justify-between text-muted">
                   <span>Drift</span>
-                  <span className="font-mono text-ink">{(shown.point.drift * 100).toFixed(1)}%</span>
+                  <span className="font-mono text-ink">{(shown.step.drift * 100).toFixed(1)}%</span>
+                </div>
+                <div className="mt-1 flex justify-between text-muted">
+                  <span>Confidence</span>
+                  <span className="font-mono text-ink">{(shown.step.confidence * 100).toFixed(1)}%</span>
+                </div>
+                <div className="mt-1 flex justify-between text-muted">
+                  <span>Prediction</span>
+                  <span className="font-mono text-ink capitalize">{shown.step.topConcept}</span>
                 </div>
               </div>
             )}

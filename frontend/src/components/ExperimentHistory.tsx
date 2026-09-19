@@ -1,14 +1,14 @@
-import { summarizeTransform } from "../lib/transformSummary"
-import type { Experiment } from "../types/experiment"
+import { describeExperiment } from "../lib/transformSummary"
+import type { SavedExperiment } from "../types/experiment"
 import InfoTip from "./InfoTip"
 import Panel from "./Panel"
 
 const TIP =
-  "Saved runs, kept in memory for this browser session only — nothing is sent to a server or written to disk. Click one to restore its image and perturbation settings exactly."
+  "Saved runs, kept in memory for this browser session only — nothing is sent to a server or written to disk. Click one to restore its image, perturbation, and severity exactly."
 
 interface ExperimentHistoryProps {
-  experiments: Experiment[]
-  onRestore: (experiment: Experiment) => void
+  experiments: SavedExperiment[]
+  onRestore: (experiment: SavedExperiment) => void
 }
 
 function relativeTime(timestamp: number): string {
@@ -51,7 +51,7 @@ export default function ExperimentHistory({ experiments, onRestore }: Experiment
                     <span className="truncate text-sm font-medium text-ink">{exp.name}</span>
                     <span className="shrink-0 text-[10px] text-muted">{relativeTime(exp.createdAt)}</span>
                   </div>
-                  <span className="truncate text-xs text-muted">{summarizeTransform(exp.transform)}</span>
+                  <span className="truncate text-xs text-muted">{describeExperiment(exp.axis, exp.severity)}</span>
                   <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-ink">
                     <span>{(exp.similarity * 100).toFixed(1)}% sim</span>
                     <span>{(exp.drift * 100).toFixed(1)}% drift</span>

@@ -8,6 +8,9 @@ interface ControlSliderProps {
   onChange: (value: number) => void
   disabled?: boolean
   staggerMs?: number
+  /** Percent-scale step size, e.g. 10 snaps to 0/10/20/.../100. Defaults to
+   * 1 (free dragging) for controls with no fixed measurement points. */
+  step?: number
 }
 
 export default function ControlSlider({
@@ -17,6 +20,7 @@ export default function ControlSlider({
   onChange,
   disabled = false,
   staggerMs = 0,
+  step = 1,
 }: ControlSliderProps) {
   const percent = Math.round(value * 100)
   const inputId = `control-${label.toLowerCase()}`
@@ -39,6 +43,7 @@ export default function ControlSlider({
         type="range"
         min={0}
         max={100}
+        step={step}
         value={percent}
         disabled={disabled}
         onChange={(e) => onChange(Number(e.target.value) / 100)}
