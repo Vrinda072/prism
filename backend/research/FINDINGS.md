@@ -1,7 +1,8 @@
 # Fine-vs-coarse-grained corruption robustness
 
-This is a real offline experiment, not a live-compute panel like the rest of PRISM: a script that runs
-a full sweep over a labeled dataset once and produces a results CSV and a written finding.
+This is a standalone Python script that imports the same backend model and inference code PRISM's live
+app uses, runs a full severity sweep over a labeled dataset in one batch, and writes the result to a
+CSV, rather than a browser panel that recomputes on every interaction.
 
 ## The question
 
@@ -16,9 +17,8 @@ both levels together? And does the answer depend on which corruption is used?
   ensembling already live in `/semantic`: a 37-way breed classifier and a 2-way cat/dog classifier.
   They are not hierarchically linked. Each is scored against the image independently.
 - **Dataset**: a stratified sample of the real [Oxford-IIIT Pet dataset](https://huggingface.co/datasets/timm/oxford-iiit-pet)
-  (CC BY-SA 4.0): 20 images per breed across 37 breeds, 740 images total. Streamed directly from the
-  Parquet files rather than downloading the full ~790MB dataset, because this machine had limited free
-  disk space.
+  (CC BY-SA 4.0): 20 images per breed across 37 breeds, 740 images total, streamed directly from the
+  Parquet files.
 - **Perturbations**: blur and noise, each run independently at PRISM's own 11 fixed severities (0 to
   100%, step 10%), using the same parameterization as the live app's canvas pipeline: Gaussian blur
   (radius equals severity times 20px) and per-pixel Gaussian noise (standard deviation equals severity

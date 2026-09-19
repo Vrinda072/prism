@@ -102,10 +102,11 @@ changes: 40 rapid slider ticks in a row collapse into exactly one network reques
 
 ## Research: does CLIP confuse breeds before it confuses species?
 
-Everything above is live and interactive. This section is a real offline batch experiment: a script that
-runs a full sweep over a labeled dataset and produces a results CSV and a written finding, rather than
-a panel that recomputes on every interaction. The full write-up, raw per-image CSVs, and every script
-needed to reproduce this live in [`backend/research/`](backend/research/).
+Everything above runs live in the browser, one image at a time. This section is different: a standalone
+Python script that imports the same backend model and inference code directly, runs a full severity
+sweep over a labeled dataset in one batch, and writes the result to a CSV rather than a browser panel.
+The full write-up, raw per-image CSVs, and every script needed to reproduce this live in
+[`backend/research/`](backend/research/).
 
 ### The question
 
@@ -122,9 +123,8 @@ is applied?
   from the other. Each scores the image on its own.
 - **Dataset**: a stratified sample of the real
   [Oxford-IIIT Pet dataset](https://huggingface.co/datasets/timm/oxford-iiit-pet) (CC BY-SA 4.0), 20
-  images per breed across 37 breeds, 740 images total. Streamed directly from the dataset's Parquet
-  files rather than downloading the full 790MB, because this machine had under 3GB of free disk space
-  at the time.
+  images per breed across 37 breeds, 740 images total, streamed directly from the dataset's Parquet
+  files.
 - **Perturbations**: blur and noise, run independently at the live app's own 11 fixed severities (0 to
   100 percent, step 10), using the same parameterization as the browser's canvas pipeline.
 - 16,280 total forward passes (740 images, 11 severities, 2 corruption types), about 6 minutes on this
