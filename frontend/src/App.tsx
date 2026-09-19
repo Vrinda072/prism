@@ -5,6 +5,7 @@ import ControlsBar from "./components/ControlsBar"
 import DatasetBenchmark from "./components/DatasetBenchmark"
 import EmbeddingTrajectory from "./components/EmbeddingTrajectory"
 import ExperimentHistory from "./components/ExperimentHistory"
+import ExperimentSummary from "./components/ExperimentSummary"
 import { HowItWorks } from "./components/InfoSections"
 import { ResearchFindings } from "./components/ResearchFindings"
 import ImagePanel from "./components/ImagePanel"
@@ -34,6 +35,7 @@ function App() {
     progress,
     total,
     error,
+    retry,
     comparisonByAxis,
     comparisonStatus,
     comparisonProgress,
@@ -117,6 +119,7 @@ function App() {
               error={error}
               suggestedName={describeExperiment(axis, activeSeverity)}
               onSaveExperiment={saveExperiment}
+              onRetry={retry}
             />
           </section>
         </main>
@@ -124,6 +127,7 @@ function App() {
 
       <section id="numbers" className="border-t border-border px-8 py-16">
         <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-8">
+          <ExperimentSummary image={originalImage} axis={axis} steps={steps} status={status} />
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className="min-h-[320px] lg:col-span-2">
               <EmbeddingTrajectory steps={steps} activeSeverity={activeSeverity} onSelectSeverity={setActiveSeverity} />

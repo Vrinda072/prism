@@ -78,6 +78,7 @@ interface AnalysisPanelProps {
   error: string | null
   suggestedName: string
   onSaveExperiment: (name: string) => void
+  onRetry: () => void
 }
 
 export default function AnalysisPanel({
@@ -87,6 +88,7 @@ export default function AnalysisPanel({
   error,
   suggestedName,
   onSaveExperiment,
+  onRetry,
 }: AnalysisPanelProps) {
   const similarityRaw = step ? step.similarity * 100 : null
   const driftRaw = step ? step.drift * 100 : null
@@ -199,7 +201,18 @@ export default function AnalysisPanel({
 
         {!hasImage && <p className="mt-6 text-sm text-muted">Choose an image to begin.</p>}
         {hasImage && isAnalyzing && <p className="mt-6 text-sm text-muted">Running severity sweep...</p>}
-        {hasImage && !isAnalyzing && error && <p className="mt-6 text-sm text-accent-text">{error}</p>}
+        {hasImage && !isAnalyzing && error && (
+          <div className="mt-6 flex items-center justify-between gap-3">
+            <p className="text-sm text-accent-text">{error}</p>
+            <button
+              type="button"
+              onClick={onRetry}
+              className="shrink-0 rounded-full border border-ink px-3 py-1 text-xs font-medium text-ink transition hover:bg-ink hover:text-paper"
+            >
+              Retry
+            </button>
+          </div>
+        )}
       </div>
     </Panel>
   )

@@ -24,16 +24,16 @@ export default function ImageSourceBar({ onSelect }: ImageSourceBarProps) {
     }
     setError(null)
     setActiveSampleId(null)
-    onSelect({ url: URL.createObjectURL(file), blob: file })
+    onSelect({ url: URL.createObjectURL(file), blob: file, label: file.name })
   }
 
-  const handleSample = async (id: string, src: string) => {
+  const handleSample = async (id: string, src: string, label: string) => {
     setError(null)
     setActiveSampleId(id)
     try {
       const response = await fetch(src)
       const blob = await response.blob()
-      onSelect({ url: src, blob })
+      onSelect({ url: src, blob, label })
     } catch {
       setError("Could not load this sample image.")
     }
@@ -50,7 +50,7 @@ export default function ImageSourceBar({ onSelect }: ImageSourceBarProps) {
             <button
               key={sample.id}
               type="button"
-              onClick={() => handleSample(sample.id, sample.src)}
+              onClick={() => handleSample(sample.id, sample.src, sample.label)}
               aria-label={`Use sample image: ${sample.label}`}
               aria-pressed={activeSampleId === sample.id}
               title={sample.label}
